@@ -2,6 +2,12 @@
 
 Language: [English](README.md)
 
+> 此分支新增 CPU/GPU 温度阈值自动控制：托盘菜单中的 `Automatic (temperature)`
+> 和 `Temperature thresholds...`。默认 70°C 切换高转速，65°C 恢复正常转速。
+> 内置 LibreHardwareMonitorLib 传感器库；CPU 读数需要安装 PawnIO 驱动，
+> 并以管理员身份运行。手动选择转速会关闭自动模式。完整构建、依赖和行为说明见
+> [English README](README.md#automatic-temperature-control)。以下为原版使用说明。
+
 ---
 
 在Windows系统使用`Lenovo ACPI-Compliant Virtual Power Controller`驱动控制联想笔记本电脑风扇。

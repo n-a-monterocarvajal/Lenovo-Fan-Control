@@ -1,6 +1,6 @@
 # Lenovo Laptop Fan Control
 
-Language: [中文](README.zh_CN.md)
+Language: [Español](README.es.md) | [中文](README.zh_CN.md)
 
 ---
 
@@ -10,7 +10,75 @@ This project is for the Lenovo laptops whose fan failed to be controlled with ma
 
 However, this project is not a perfect solution for fan control. It can only control the fan to spin at the minimum speed, maximum speed and the normal speed, and dosen't provide any accurate speed control.
 
-This project has the only simple function of controlling fan. If you want more complex functions such as temperature monitoring, fan curves and so on, you can install [FanControl](https://github.com/Rem0o/FanControl.Releases), which is a powerful fan controlling program, and a plugin of it that is [FanControl.LenovoPlugin](https://github.com/jiarandiana0307/FanControl.LenovoPlugin) which is based on this project, to achieve powerful fan control features. 
+This fork adds optional temperature thresholds to the original tray application.
+It switches between High Speed and the laptop's Normal Speed automatically,
+without installing the FanControl or Open Hardware Monitor applications.
+For full fan curves, [FanControl](https://github.com/Rem0o/FanControl.Releases)
+and [FanControl.LenovoPlugin](https://github.com/jiarandiana0307/FanControl.LenovoPlugin)
+remain alternatives.
+
+## Automatic temperature control
+
+1. Keep `TemperatureMonitor.exe` and its supplied DLLs next to LenovoFanControl.
+   The build includes LibreHardwareMonitorLib; this is not a Windows component.
+2. For CPU readings, install the [PawnIO sensor driver](https://pawnio.eu/) once
+   and run LenovoFanControl as administrator. The existing Lenovo EnergyDrv
+   driver is still required. The program does not install drivers automatically.
+   The helper requires .NET Framework 4.7.2 or later.
+3. Open **Temperature thresholds...** in the tray menu. Defaults are **70 C**
+   to enter High Speed and **65 C** to return to Normal Speed.
+4. Check **Automatic (temperature)**, or start with `--auto`.
+
+The menu shows current CPU and GPU readings. CPU Package (or AMD die temperature)
+is preferred; otherwise the highest available absolute CPU temperature is used.
+The primary GPU Core temperature is used for each detected GPU. The hottest
+CPU/GPU value controls the fan: either can trigger High Speed; all monitored
+readings must be at or below the lower threshold to return to Normal Speed.
+GPU hotspot, VRAM, disks, motherboard sensors and Distance to TjMax are excluded.
+A GPU without a supported core sensor is shown as unavailable; CPU monitoring
+is required. If a previously readable GPU stops reporting, that is a sensor failure.
+
+The speed and temperatures are the two informational rows at the top of the tray
+menu. Temperatures remain visible in manual mode. Version 0.5 includes complete
+English and neutral Spanish controls, selected from the Windows language, as well
+as Chinese. About credits both the original author and this fork.
+
+Between the two thresholds the previous speed is retained (hysteresis).
+Settings accept `20 <= Normal < High <= 100` degrees Celsius. Defaults are starting
+points, not hardware-specific maximum temperatures. Readings arrive every two
+seconds. Missing, invalid or stale readings (10 seconds without an update) request
+High Speed and show **Temperature unavailable**. Startup also requests High Speed
+until a fresh reading arrives. After resolving a sensor/driver problem, toggle
+Automatic off and on to restart the sensor helper.
+
+Choosing any manual speed or its hotkey disables Automatic but keeps temperature
+monitoring active. Unchecking Automatic
+returns to Normal Speed. Settings persist in
+`%LOCALAPPDATA%\LenovoFanControl\settings.ini`; manual command-line speed flags
+override saved Automatic for that launch. Manual Low Speed has no thermal override.
+
+Unlike IdeaFan's broader set of OHM temperatures, this mode deliberately monitors
+CPU/GPU cooling. It preserves the Lenovo dust-removal method and its limitations;
+High Speed is a requested mode, not a measurement of fan RPM.
+
+## Build and test this fork
+
+Install Visual Studio 2022 Build Tools with **Desktop development with C++**, a
+Windows SDK, and a .NET SDK. From PowerShell:
+
+```powershell
+./build.ps1 -Architecture x64 -Test
+./build.ps1 -Architecture x86 -Test
+```
+
+Outputs, including the sensor library and dependencies, are in `bin/x64` or
+`bin/x86`. Distributable ZIPs are `bin/LenovoFanControl-v0.5-x64.zip` and
+`bin/LenovoFanControl-v0.5-x86.zip`. Tests simulate temperature traces and
+driver calls, and exercise the English/Spanish tray and settings dialog;
+they do not operate the real fan. Hardware compatibility must still
+be checked on the target Lenovo laptop. The original MinGW Makefile builds the
+native application only; `build.ps1` also builds/packages the sensor helper.
+See [third-party dependencies](THIRD-PARTY-NOTICES.md).
 
 # Prerequisites
 
@@ -20,7 +88,7 @@ This project has the only simple function of controlling fan. If you want more c
 
 # Usage
 
-1. Download binary from [Releases](https://github.com/jiarandiana0307/Lenovo-Fan-Control/releases).
+1. Build this fork as described above. The [upstream releases](https://github.com/jiarandiana0307/Lenovo-Fan-Control/releases) do not contain the automatic temperature option.
 
 2. Double-click the LenovoFanControl program to run it, then you will see it in system tray.
 
@@ -40,7 +108,7 @@ Finally, you can click the `Exit` item on the menu to terminate the program, the
 
 To select the start speed of the fan, you can run the program with command line parameter `--low-speed`, `--normal-speed` and `--high-speed`, which will set the fan to low speed, normal speed and high speed at start respectively. The default behavior is to set the fan to high speed if non of these parameters are given. For example, if you want to keep the fan spinning at low speed at start, you can run the command: `LenovoFanControl-x64.exe --low-speed`
 
-**Note:** Use the `Low Speed` mode with caution. Because this program does not have temperature monitoring, using the `Low Speed` mode can easily lead to high hardware temperatures, which can lead to hardware damage.
+**Note:** Manual `Low Speed` disables automatic temperature control and can lead to high hardware temperatures. Automatic mode never selects Low Speed.
 
 # Theory
 

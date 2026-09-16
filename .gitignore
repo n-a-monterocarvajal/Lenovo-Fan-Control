@@ -1,2 +1,7 @@
 /.vscode
 /bin
+/.packages/
+/.research/
+/sensor/bin/
+/sensor/obj/
+/test-results/

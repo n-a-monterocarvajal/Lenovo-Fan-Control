@@ -1,2 +1,42 @@
 #include "resource.h"
+#include <windows.h>
+#pragma code_page(65001)
 IDI_APPICON ICON "icon.ico"
+
+1 VERSIONINFO
+FILEVERSION 0,5,0,0
+PRODUCTVERSION 0,5,0,0
+FILEOS VOS_NT_WINDOWS32
+FILETYPE VFT_APP
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "FileDescription", "Lenovo Fan Control"
+            VALUE "FileVersion", "0.5"
+            VALUE "ProductName", "Lenovo Fan Control"
+            VALUE "ProductVersion", "0.5"
+            VALUE "LegalCopyright", "Original: Kira Diana. Fork: n-a-monterocarvajal."
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 1200
+    END
+END
+
+IDD_TEMPERATURE DIALOGEX 0, 0, 270, 132
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Umbrales de temperatura"
+FONT 9, "Segoe UI"
+BEGIN
+    LTEXT "Se usa la temperatura más alta entre CPU y GPU.", IDC_TEMP_HINT, 10, 10, 250, 20
+    LTEXT "Velocidad alta a partir de (°C):", IDC_HIGH_LABEL, 10, 37, 180, 12
+    EDITTEXT IDC_HIGH_TEMP, 205, 35, 50, 14, ES_NUMBER | WS_TABSTOP
+    LTEXT "Velocidad normal al bajar a (°C):", IDC_NORMAL_LABEL, 10, 59, 190, 12
+    EDITTEXT IDC_NORMAL_TEMP, 205, 57, 50, 14, ES_NUMBER | WS_TABSTOP
+    LTEXT "Entre ambos valores se mantiene el modo anterior.", IDC_BAND_HINT, 10, 80, 250, 12
+    DEFPUSHBUTTON "Guardar", IDOK, 145, 106, 52, 16
+    PUSHBUTTON "Cancelar", IDCANCEL, 203, 106, 52, 16
+END
