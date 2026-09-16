@@ -116,7 +116,7 @@ const LangResources es = {
     L"Acerca de",
     L"Salir",
     L"Lenovo Fan Control " VERSION L"\n\n"
-    L"Control del ventilador para equipos Lenovo compatibles.\n\n"
+    L"Control del ventilador para portátiles Lenovo con el controlador Lenovo ACPI-Compliant Virtual Power Controller en Windows.\n\n"
     L"Proyecto original: jiarandiana0307 (Kira Diana)\n"
     L"https://github.com/jiarandiana0307/Lenovo-Fan-Control\n\n"
     L"Fork y control por temperatura: n-a-monterocarvajal\n"
@@ -251,7 +251,9 @@ static INT_PTR CALLBACK SettingsProc(HWND dialog, UINT msg, WPARAM wp, LPARAM lp
             }
             high_threshold = high; normal_threshold = normal;
             save_settings();
-            if (automatic) poll_temperature();
+            /* New thresholds are a deliberate decision, not gradual drift: don't let
+               hysteresis keep the fan on the old verdict inside the new dead band. */
+            if (automatic) { auto_high = 0; poll_temperature(); }
             EndDialog(dialog, IDOK);
             return TRUE;
         }

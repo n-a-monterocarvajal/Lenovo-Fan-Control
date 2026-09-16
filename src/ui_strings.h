@@ -31,7 +31,9 @@ static const wchar_t *const ui_strings[][3] = {
     { L"The highest CPU/GPU temperature controls the fan.", L"Se usa la temperatura más alta entre CPU y GPU.", L"根据 CPU 和 GPU 的最高温度控制风扇。" },
     { L"High Speed at or above (°C):", L"Velocidad alta a partir de (°C):", L"高转速启动温度 (°C)：" },
     { L"Normal Speed at or below (°C):", L"Velocidad normal al bajar a (°C):", L"恢复正常转速温度 (°C)：" },
-    { L"Between thresholds, the previous mode is retained.", L"Entre ambos valores se mantiene el modo anterior.", L"在两个阈值之间保持原来的转速模式。" },
+    { L"Between the two values, the fan keeps its last mode instead of switching back and forth.",
+      L"Entre ambos valores, el ventilador no cambia de modo: así se evita que suba y baje de golpe.",
+      L"在两个阈值之间风扇保持原有模式，避免频繁切换。" },
     { L"Save", L"Guardar", L"保存" },
     { L"Cancel", L"Cancelar", L"取消" }
 };

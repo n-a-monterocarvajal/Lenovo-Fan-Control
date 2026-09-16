@@ -71,6 +71,15 @@ int main(void) {
         SetDlgItemInt(dialog, IDC_NORMAL_TEMP, 75, FALSE);
         SendMessageW(dialog, WM_COMMAND, IDOK, 0);
         assert(high_threshold == 80 && normal_threshold == 75 && current_speed == NORMAL_SPEED);
+        /* Widen the band around the current 71.5C reading while auto_high is stale
+           at HIGH: the new band (50-90) shouldn't blindly keep that old verdict. */
+        auto_high = 1;
+        toggle_fan_high_speed();
+        assert(current_speed == HIGH_SPEED);
+        SetDlgItemInt(dialog, IDC_HIGH_TEMP, 90, FALSE);
+        SetDlgItemInt(dialog, IDC_NORMAL_TEMP, 50, FALSE);
+        SendMessageW(dialog, WM_COMMAND, IDOK, 0);
+        assert(current_speed == NORMAL_SPEED); /* Editing thresholds re-decides immediately. */
         assert(wcsstr(lang->about_text, L"n-a-monterocarvajal"));
         DestroyWindow(dialog);
         SendMessageW(window, WM_COMMAND, ID_TRAY_NORMAL_SPEED, 0);

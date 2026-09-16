@@ -26,7 +26,7 @@ BEGIN
     END
 END
 
-IDD_TEMPERATURE DIALOGEX 0, 0, 270, 132
+IDD_TEMPERATURE DIALOGEX 0, 0, 270, 142
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Umbrales de temperatura"
 FONT 9, "Segoe UI"
@@ -36,7 +36,7 @@ BEGIN
     EDITTEXT IDC_HIGH_TEMP, 205, 35, 50, 14, ES_NUMBER | WS_TABSTOP
     LTEXT "Velocidad normal al bajar a (°C):", IDC_NORMAL_LABEL, 10, 59, 190, 12
     EDITTEXT IDC_NORMAL_TEMP, 205, 57, 50, 14, ES_NUMBER | WS_TABSTOP
-    LTEXT "Entre ambos valores se mantiene el modo anterior.", IDC_BAND_HINT, 10, 80, 250, 12
-    DEFPUSHBUTTON "Guardar", IDOK, 145, 106, 52, 16
-    PUSHBUTTON "Cancelar", IDCANCEL, 203, 106, 52, 16
+    LTEXT "Entre ambos valores se mantiene el modo anterior.", IDC_BAND_HINT, 10, 80, 250, 24
+    DEFPUSHBUTTON "Guardar", IDOK, 145, 116, 52, 16
+    PUSHBUTTON "Cancelar", IDCANCEL, 203, 116, 52, 16
 END
