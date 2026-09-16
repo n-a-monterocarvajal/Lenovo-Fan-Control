@@ -1,11 +1,39 @@
 using System;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
+using System.Reflection;
 using System.Threading;
 using LibreHardwareMonitor.Hardware;
 using Microsoft.Win32.SafeHandles;
 
 internal static class Program
 {
+    /// <summary>
+    /// PawnIO's driver is what lets LibreHardwareMonitor read CPU temperature (MSR access).
+    /// It ships as an embedded installer so the sensor stays a single file: silently
+    /// install it once, as the fan control app already runs elevated for EnergyDrv.
+    /// </summary>
+    private static void EnsurePawnIoInstalled()
+    {
+        if (LibreHardwareMonitor.PawnIo.PawnIo.IsInstalled || !Diagnostics.IsAdministrator()) return;
+        string installerPath = Path.Combine(Path.GetTempPath(), "PawnIO_setup.exe");
+        try
+        {
+            using (Stream resource = Assembly.GetExecutingAssembly().GetManifestResourceStream("PawnIO_setup.exe"))
+            using (FileStream file = File.Create(installerPath))
+                resource.CopyTo(file);
+            using (Process installer = Process.Start(new ProcessStartInfo(installerPath, "-install -silent")
+            {
+                UseShellExecute = false,
+                CreateNoWindow = true
+            }))
+                installer.WaitForExit(30000);
+        }
+        catch { /* CPU temperature simply stays unavailable; GPU/fan control are unaffected. */ }
+        finally { try { File.Delete(installerPath); } catch { } }
+    }
+
     private static float? Sample(IHardware hardware, bool cpu)
     {
         hardware.Update();
@@ -35,6 +63,7 @@ internal static class Program
 
     private static int Main(string[] args)
     {
+        if (args.Length == 1 && args[0] == "--diagnose") return Diagnostics.Run();
         ulong handle, parentHandle;
         if (args.Length != 2 || !ulong.TryParse(args[0], out handle) ||
             !ulong.TryParse(args[1], out parentHandle)) return 1;
@@ -48,6 +77,7 @@ internal static class Program
             var monitoredGpus = new System.Collections.Generic.HashSet<string>();
             try
             {
+                EnsurePawnIoInstalled();
                 computer.Open();
                 do
                 {

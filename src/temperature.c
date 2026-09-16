@@ -4,6 +4,43 @@
 #include <stdlib.h>
 #include <wchar.h>
 #include "temperature.h"
+#include "../res/resource.h"
+
+/* TemperatureMonitor.exe is embedded as an RCDATA resource so the release build ships
+   as a single file; extract it to a temp path once per run and launch it from there.
+   Test binaries carry no such resource and fall back to a sibling exe (tests/fake_sensor.c). */
+static int extract_sensor_exe(WCHAR *path, size_t path_capacity) {
+    HRSRC res;
+    HGLOBAL loaded;
+    void *data;
+    DWORD size, written, length;
+    HANDLE file;
+    WCHAR dir[MAX_PATH];
+
+    res = FindResourceW(NULL, MAKEINTRESOURCE(IDR_SENSOR_EXE), RT_RCDATA);
+    if (!res) {
+        length = GetModuleFileNameW(NULL, path, (DWORD)path_capacity);
+        if (!length || length >= path_capacity || !wcsrchr(path, L'\\')) return 0;
+        *wcsrchr(path, L'\\') = 0;
+        if (wcslen(path) + 25 >= path_capacity) return 0;
+        wcscat(path, L"\\TemperatureMonitor.exe");
+        return 1;
+    }
+    loaded = LoadResource(NULL, res);
+    if (!loaded) return 0;
+    data = LockResource(loaded);
+    size = SizeofResource(NULL, res);
+    if (!data || !size) return 0;
+
+    if (!GetTempPathW(MAX_PATH, dir)) return 0;
+    if (_snwprintf(path, path_capacity, L"%lsLenovoFanControl-Sensor.exe", dir) < 0) return 0;
+    file = CreateFileW(path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (file == INVALID_HANDLE_VALUE) return 0;
+    written = 0;
+    if (!WriteFile(file, data, size, &written, NULL) || written != size) { CloseHandle(file); return 0; }
+    CloseHandle(file);
+    return 1;
+}
 
 static HANDLE process, output, stop_event;
 static char line[64];
@@ -19,13 +56,8 @@ int temperature_start(void) {
     WCHAR path[MAX_PATH], command[MAX_PATH + 100];
     STARTUPINFOW si = { sizeof(si) };
     PROCESS_INFORMATION pi = {0};
-    DWORD length;
     temperature_stop();
-    length = GetModuleFileNameW(NULL, path, MAX_PATH);
-    if (!length || length >= MAX_PATH || !wcsrchr(path, L'\\')) return 0;
-    *wcsrchr(path, L'\\') = 0;
-    if (wcslen(path) + 25 >= MAX_PATH) return 0;
-    wcscat(path, L"\\TemperatureMonitor.exe");
+    if (!extract_sensor_exe(path, MAX_PATH)) return 0;
     if (!CreatePipe(&output, &writer, &sa, 0)) goto failed;
     if (!SetHandleInformation(output, HANDLE_FLAG_INHERIT, 0)) goto failed;
     stop_event = CreateEventW(&sa, TRUE, FALSE, NULL);

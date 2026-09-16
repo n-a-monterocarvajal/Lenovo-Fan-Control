@@ -10,5 +10,20 @@
   <ItemGroup>
     <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.6" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.34" PrivateAssets="all" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\PawnIO_setup.exe" LogicalName="PawnIO_setup.exe" />
+  </ItemGroup>
+  <!-- Merge every copy-local dependency into TemperatureMonitor.exe so the sensor ships as one file. -->
+  <Target Name="ILRepackMerge" AfterTargets="Build">
+    <ItemGroup>
+      <MergeDll Include="$(TargetDir)*.dll" />
+      <MergeInput Include="$(TargetPath)" />
+      <MergeInput Include="@(MergeDll)" />
+    </ItemGroup>
+    <ILRepack OutputFile="$(TargetPath)" InputAssemblies="@(MergeInput)"
+              TargetKind="SameAsPrimaryAssembly" LibraryPath="$(TargetDir)" Internalize="true" Parallel="true" />
+    <Delete Files="@(MergeDll)" />
+  </Target>
 </Project>

@@ -19,12 +19,14 @@ remain alternatives.
 
 ## Automatic temperature control
 
-1. Keep `TemperatureMonitor.exe` and its supplied DLLs next to LenovoFanControl.
-   The build includes LibreHardwareMonitorLib; this is not a Windows component.
-2. For CPU readings, install the [PawnIO sensor driver](https://pawnio.eu/) once
-   and run LenovoFanControl as administrator. The existing Lenovo EnergyDrv
-   driver is still required. The program does not install drivers automatically.
-   The helper requires .NET Framework 4.7.2 or later.
+1. `LenovoFanControl-x64.exe` (or `-x86.exe`) is the only executable; the
+   LibreHardwareMonitor-based sensor helper is embedded in it, not a separate file.
+2. For CPU readings, run LenovoFanControl as administrator. On first elevated
+   run it silently installs the [PawnIO sensor driver](https://pawnio.eu/) if
+   missing (its signed installer ships embedded too). The existing Lenovo
+   EnergyDrv driver is still required and is not installed automatically. The
+   embedded sensor helper needs .NET Framework 4.7.2 or later, already present
+   on Windows 10/11.
 3. Open **Temperature thresholds...** in the tray menu. Defaults are **70 C**
    to enter High Speed and **65 C** to return to Normal Speed.
 4. Check **Automatic (temperature)**, or start with `--auto`.

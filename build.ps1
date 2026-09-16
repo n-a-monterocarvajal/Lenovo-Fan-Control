@@ -13,10 +13,17 @@ $out = Join-Path $PSScriptRoot "bin\$Architecture"
 New-Item -ItemType Directory -Force $out | Out-Null
 & rc.exe /nologo /i res /fo "$out\icon.res" res/icon.rc
 Check-Exit
-& cl.exe /nologo /std:c11 /utf-8 /W4 /D_CRT_SECURE_NO_WARNINGS /O2 /MT /Fo"$out\\" /Fe"$out\LenovoFanControl-$Architecture.exe" src/lenovo_fan_control.c src/fanctrl.c src/fan_worker.c src/auto_control.c src/temperature.c "$out\icon.res" /link /SUBSYSTEM:WINDOWS user32.lib shell32.lib advapi32.lib
+& dotnet build sensor/TemperatureMonitor.csproj -c Release --packages .packages -p:RuntimeIdentifier="win-$Architecture" -p:PlatformTarget=$Architecture -o "$out\"
 Check-Exit
-& dotnet build sensor/TemperatureMonitor.csproj -c Release --packages .packages -p:RuntimeIdentifier="win-$Architecture" -p:PlatformTarget=$Architecture -o $out
+# Embed the (ILRepack-merged, single-file) sensor exe into the main exe as an RCDATA
+# resource, so the release ships as one file instead of two (matches the pre-sensor packaging).
+$sensorExe = (Resolve-Path "$out\TemperatureMonitor.exe").Path -replace '\\', '\\\\'
+Set-Content -Path "$out\sensor.rc" -Value "109 RCDATA ""$sensorExe"""
+& rc.exe /nologo /fo "$out\sensor.res" "$out\sensor.rc"
 Check-Exit
+& cl.exe /nologo /std:c11 /utf-8 /W4 /D_CRT_SECURE_NO_WARNINGS /O2 /MT /Fo"$out\\" /Fe"$out\LenovoFanControl-$Architecture.exe" src/lenovo_fan_control.c src/fanctrl.c src/fan_worker.c src/auto_control.c src/temperature.c "$out\icon.res" "$out\sensor.res" /link /SUBSYSTEM:WINDOWS user32.lib shell32.lib advapi32.lib
+Check-Exit
+Remove-Item "$out\TemperatureMonitor.exe","$out\TemperatureMonitor.exe.config","$out\TemperatureMonitor.pdb","$out\sensor.rc","$out\sensor.res" -ErrorAction SilentlyContinue
 Copy-Item LICENSE,README.md,README.es.md,THIRD-PARTY-NOTICES.md $out
 $licenseDir = Join-Path $out 'licenses'
 New-Item -ItemType Directory -Force $licenseDir | Out-Null

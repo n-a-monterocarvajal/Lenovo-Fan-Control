@@ -9,13 +9,14 @@ temperaturas actuales de CPU y GPU, también en modo manual. No son una medició
 
 ## Instalación y uso
 
-1. Extrae **todo** el ZIP de tu arquitectura a una carpeta. Conserva el programa,
-   `TemperatureMonitor.exe` y las DLL juntos.
+1. Extrae el ZIP de tu arquitectura. `LenovoFanControl-x64.exe` (o `-x86.exe`) es el
+   único ejecutable: el lector de sensores LibreHardwareMonitor va incrustado dentro,
+   no es un archivo aparte.
 2. El equipo debe ser compatible con el controlador **Lenovo ACPI-Compliant Virtual
-   Power Controller (EnergyDrv)**. Para leer la CPU, instala una vez el controlador
-   [PawnIO](https://pawnio.eu/). La biblioteca de sensores LibreHardwareMonitor viene
-   incluida; no necesitas instalar las aplicaciones FanControl ni OHM. Se requiere
-   .NET Framework 4.7.2 o posterior.
+   Power Controller (EnergyDrv)**, que no se instala automáticamente. Para leer la
+   CPU, el propio programa instala en silencio el controlador [PawnIO](https://pawnio.eu/)
+   la primera vez que se ejecuta como administrador, si falta. Se requiere .NET
+   Framework 4.7.2 o posterior (ya presente en Windows 10/11).
 3. Ejecuta LenovoFanControl **como administrador** y abre su menú desde la bandeja.
 4. En **Umbrales de temperatura...**, ajusta la temperatura para activar la velocidad
    alta (70 °C inicialmente) y para volver a la velocidad normal (65 °C inicialmente).
