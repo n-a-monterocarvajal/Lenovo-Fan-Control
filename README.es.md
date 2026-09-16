@@ -15,9 +15,10 @@ temperaturas actuales de CPU y GPU, también en modo manual. No son una medició
 2. El equipo debe ser compatible con el controlador **Lenovo ACPI-Compliant Virtual
    Power Controller (EnergyDrv)**, que no se instala automáticamente. Para leer la
    CPU, el propio programa instala en silencio el controlador [PawnIO](https://pawnio.eu/)
-   la primera vez que se ejecuta como administrador, si falta. Se requiere .NET
-   Framework 4.7.2 o posterior (ya presente en Windows 10/11).
-3. Ejecuta LenovoFanControl **como administrador** y abre su menú desde la bandeja.
+   la primera vez que se ejecuta, si falta. Se requiere .NET Framework 4.7.2 o
+   posterior (ya presente en Windows 10/11).
+3. Ejecuta LenovoFanControl: el propio exe pide elevación (UAC) al abrir, acepta
+   el aviso, y abre su menú desde la bandeja.
 4. En **Umbrales de temperatura...**, ajusta la temperatura para activar la velocidad
    alta (70 °C inicialmente) y para volver a la velocidad normal (65 °C inicialmente).
 5. Activa **Automático por temperatura**. También puedes iniciar con `--auto`.

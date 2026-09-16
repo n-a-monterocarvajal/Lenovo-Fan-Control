@@ -21,7 +21,7 @@ $sensorExe = (Resolve-Path "$out\TemperatureMonitor.exe").Path -replace '\\', '\
 Set-Content -Path "$out\sensor.rc" -Value "109 RCDATA ""$sensorExe"""
 & rc.exe /nologo /fo "$out\sensor.res" "$out\sensor.rc"
 Check-Exit
-& cl.exe /nologo /std:c11 /utf-8 /W4 /D_CRT_SECURE_NO_WARNINGS /O2 /MT /Fo"$out\\" /Fe"$out\LenovoFanControl-$Architecture.exe" src/lenovo_fan_control.c src/fanctrl.c src/fan_worker.c src/auto_control.c src/temperature.c "$out\icon.res" "$out\sensor.res" /link /SUBSYSTEM:WINDOWS user32.lib shell32.lib advapi32.lib
+& cl.exe /nologo /std:c11 /utf-8 /W4 /D_CRT_SECURE_NO_WARNINGS /O2 /MT /Fo"$out\\" /Fe"$out\LenovoFanControl-$Architecture.exe" src/lenovo_fan_control.c src/fanctrl.c src/fan_worker.c src/auto_control.c src/temperature.c "$out\icon.res" "$out\sensor.res" /link /SUBSYSTEM:WINDOWS /MANIFEST:EMBED "/MANIFESTUAC:level='requireAdministrator' uiAccess='false'" user32.lib shell32.lib advapi32.lib
 Check-Exit
 Remove-Item "$out\TemperatureMonitor.exe","$out\TemperatureMonitor.exe.config","$out\TemperatureMonitor.pdb","$out\sensor.rc","$out\sensor.res" -ErrorAction SilentlyContinue
 Copy-Item LICENSE,README.md,README.es.md,THIRD-PARTY-NOTICES.md $out

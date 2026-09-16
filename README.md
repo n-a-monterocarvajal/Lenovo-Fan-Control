@@ -21,11 +21,12 @@ remain alternatives.
 
 1. `LenovoFanControl-x64.exe` (or `-x86.exe`) is the only executable; the
    LibreHardwareMonitor-based sensor helper is embedded in it, not a separate file.
-2. For CPU readings, run LenovoFanControl as administrator. On first elevated
-   run it silently installs the [PawnIO sensor driver](https://pawnio.eu/) if
-   missing (its signed installer ships embedded too). The existing Lenovo
-   EnergyDrv driver is still required and is not installed automatically. The
-   embedded sensor helper needs .NET Framework 4.7.2 or later, already present
+2. The exe requests administrator elevation itself (UAC prompt) on launch;
+   accept it. On first elevated run it silently installs the [PawnIO sensor
+   driver](https://pawnio.eu/) if missing (its signed installer ships embedded
+   too). The existing Lenovo EnergyDrv driver is still required and is not
+   installed automatically. The embedded sensor helper needs .NET Framework
+   4.7.2 or later, already present
    on Windows 10/11.
 3. Open **Temperature thresholds...** in the tray menu. Defaults are **70 C**
    to enter High Speed and **65 C** to return to Normal Speed.
