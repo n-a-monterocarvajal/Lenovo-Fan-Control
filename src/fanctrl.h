@@ -8,11 +8,6 @@
 #ifndef LENOVO_FAN_CONTROL_H
 #define LENOVO_FAN_CONTROL_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
 /**
  * Possible fan spinning mode.
  *
@@ -42,9 +37,5 @@ int fan_control(enum FanMode mode);
  *      FAST    Spin at maximum speed.
  */
 enum FanMode read_state();
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
