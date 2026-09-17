@@ -14,7 +14,7 @@ static const wchar_t *const ui_strings[][3] = {
     { L"Could not save temperature settings.", L"No se pudieron guardar los ajustes de temperatura.", L"无法保存温度设置。" },
     { L"CPU: %.1f °C / GPU: %.1f °C", L"CPU: %.1f °C / GPU: %.1f °C", L"CPU: %.1f °C / GPU: %.1f °C" },
     { L"CPU: %.1f °C / GPU: unavailable", L"CPU: %.1f °C / GPU: no disponible", L"CPU: %.1f °C / GPU: 不可用" },
-    { L"Temperature unavailable; High Speed for safety", L"Temperatura no disponible; velocidad alta por seguridad", L"温度不可用；保持高转速" },
+    { L"Temperature unavailable; High Speed for safety", L"Temperatura no disponible: se usa velocidad alta por precaución", L"温度不可用；保持高转速" },
     { L"Temperature unavailable (check sensors)", L"Temperatura no disponible (revisa los sensores)", L"温度不可用（请检查传感器）" },
     { L"automatic", L"automático", L"自动" },
     { L"manual", L"manual", L"手动" },
@@ -40,9 +40,9 @@ static const wchar_t *const ui_strings[][3] = {
     { L"Reading CPU temperature needs administrator privileges. Restart elevated now?\n\n"
       L"If you say no, Automatic mode will request High Speed for safety, since CPU\n"
       L"temperature stays unavailable.",
-      L"Leer la temperatura de CPU necesita permisos de administrador. ¿Reiniciar ahora como administrador?\n\n"
-      L"Si eliges que no, el modo Automático va a pedir velocidad alta por seguridad,\n"
-      L"porque la temperatura de CPU sigue sin estar disponible.",
+      L"Para leer la temperatura de CPU hace falta reiniciar el programa como administrador. ¿Reiniciarlo ahora?\n\n"
+      L"Si eliges que no, el programa sigue abierto sin permisos de administrador, y el modo\n"
+      L"Automático va a mantener velocidad alta por precaución, ya que no puede leer la CPU.",
       L"读取 CPU 温度需要管理员权限。是否现在以管理员身份重启？\n\n"
       L"如果选择否，由于 CPU 温度仍不可用，自动模式将为安全起见请求高转速。" }
 };
