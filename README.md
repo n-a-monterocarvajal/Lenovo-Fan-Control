@@ -58,6 +58,11 @@ el registro (Run del usuario actual), sin instalador ni tarea programada.
 Arranca sin elevar, igual que un doble clic normal; el modo Automático sigue
 pidiendo elevación la primera vez que necesita leer la CPU.
 
+**Iniciar siempre como administrador**, en el mismo menú, guarda la preferencia
+y relanza el programa elevado en cada arranque, útil si usas Automático a
+diario. Windows sigue mostrando el diálogo de UAC cada vez: recordar el permiso
+exigiría una tarea programada, que este programa no instala.
+
 Los umbrales aceptan `20 ≤ Normal < Alta ≤ 100` grados Celsius. Los valores
 iniciales son un punto de partida, no temperaturas máximas seguras para tu
 hardware específico. Las lecturas llegan cada dos segundos aproximadamente.

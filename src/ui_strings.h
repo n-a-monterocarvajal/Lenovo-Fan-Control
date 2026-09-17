@@ -10,7 +10,8 @@ enum UiText {
     UI_SETTINGS_HINT, UI_SETTINGS_HIGH, UI_SETTINGS_NORMAL, UI_SETTINGS_BAND,
     UI_SAVE, UI_CANCEL, UI_MENU_STARTUP, UI_ELEVATE_PROMPT, UI_APP_NAME, UI_NOTE,
     UI_ALREADY_RUNNING, UI_DRIVER_ERROR, UI_AT_LOW, UI_AT_HIGH, UI_AT_NORMAL,
-    UI_MENU_LOW, UI_MENU_HIGH, UI_MENU_NORMAL, UI_MENU_ABOUT, UI_MENU_EXIT, UI_ABOUT_TEXT
+    UI_MENU_LOW, UI_MENU_HIGH, UI_MENU_NORMAL, UI_MENU_ABOUT, UI_MENU_EXIT, UI_ABOUT_TEXT,
+    UI_MENU_ELEVATED
 };
 static int ui_language; /* 0 = English, 1 = Spanish, 2 = Chinese */
 static const wchar_t *const ui_strings[][3] = {
@@ -81,7 +82,8 @@ static const wchar_t *const ui_strings[][3] = {
       L"在Windows上通过Lenovo ACPI-Compliant Virtual Power Controller驱动控制联想笔记本电脑的风扇。\n\n"
       L"本程序已开源：https://github.com/jiarandiana0307/Lenovo-Fan-Control\n\n"
       L"Fork: n-a-monterocarvajal\nhttps://github.com/n-a-monterocarvajal/Lenovo-Fan-Control\n\n"
-      L"免责声明：本程序不对任何可能的损坏负责，风险自担。" }
+      L"免责声明：本程序不对任何可能的损坏负责，风险自担。" },
+    { L"Always run as administrator", L"Iniciar siempre como administrador", L"始终以管理员身份运行" }
 };
 static const wchar_t *ui(enum UiText text) { return ui_strings[text][ui_language]; }
 #endif

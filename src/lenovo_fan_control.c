@@ -9,6 +9,7 @@
 #include <Windows.h>
 #include <shlobj.h>
 #include <shellapi.h>
+#include <shlwapi.h>
 #include <wchar.h>
 
 #include "fanctrl.h"
@@ -32,6 +33,7 @@ enum TrayMenuIDs {
     ID_TRAY_TEMPERATURE,
     ID_TRAY_SETTINGS,
     ID_TRAY_STARTUP,
+    ID_TRAY_ELEVATED,
 };
 
 /* Same order as enum FanSpeed, so a hotkey ID is its speed. */
@@ -45,7 +47,7 @@ NOTIFYICONDATA nid;
 HMENU hMenu;
 static enum FanSpeed current_speed = HIGH_SPEED;
 static int automatic, high_threshold = 70, normal_threshold = 65, auto_high = 1;
-static int elevation_declined;
+static int elevation_declined, always_elevated;
 static HANDLE hMutex;
 static WCHAR settings_path[MAX_PATH];
 
@@ -96,7 +98,8 @@ static void save_settings(void) {
     if (!settings_path[0] ||
         !WritePrivateProfileStringW(L"Temperature", L"High", high, settings_path) ||
         !WritePrivateProfileStringW(L"Temperature", L"Normal", normal, settings_path) ||
-        !WritePrivateProfileStringW(L"Temperature", L"Automatic", automatic ? L"1" : L"0", settings_path))
+        !WritePrivateProfileStringW(L"Temperature", L"Automatic", automatic ? L"1" : L"0", settings_path) ||
+        !WritePrivateProfileStringW(L"Startup", L"Elevated", always_elevated ? L"1" : L"0", settings_path))
         MessageBoxW(nid.hWnd, ui(UI_SAVE_ERROR), ui(UI_APP_NAME), MB_OK | MB_ICONWARNING);
 }
 
@@ -112,6 +115,7 @@ static void load_settings(void) {
         high_threshold = 70; normal_threshold = 65;
     }
     automatic = GetPrivateProfileIntW(L"Temperature", L"Automatic", 0, settings_path) == 1;
+    always_elevated = GetPrivateProfileIntW(L"Startup", L"Elevated", 0, settings_path) == 1;
 }
 
 /* poll_temperature() refreshes the menu and tooltip after every call. */
@@ -153,12 +157,11 @@ static int start_temperature_monitor(void) {
 /* EnergyDrv (fan control) works fine unelevated; only CPU MSR access via PawnIO
    needs Administrator. Relaunch elevated only when the user opts into Automatic
    mode, instead of forcing UAC on every launch just for manual speed control. */
-static void relaunch_elevated(LPCWSTR extra_arg) {
+static int relaunch_elevated(LPCWSTR extra_arg) {
     WCHAR path[MAX_PATH];
-    if (!GetModuleFileNameW(NULL, path, MAX_PATH)) return;
+    if (!GetModuleFileNameW(NULL, path, MAX_PATH)) return 0;
     if (hMutex) ReleaseMutex(hMutex);
-    if ((INT_PTR)ShellExecuteW(NULL, L"runas", path, extra_arg, NULL, SW_SHOWNORMAL) > 32)
-        PostQuitMessage(0);
+    return (INT_PTR)ShellExecuteW(NULL, L"runas", path, extra_arg, NULL, SW_SHOWNORMAL) > 32;
 }
 
 static void set_automatic(int enabled, int persist) {
@@ -167,8 +170,7 @@ static void set_automatic(int enabled, int persist) {
         double cpu, gpu;
         if (!IsUserAnAdmin() && !elevation_declined) {
             if (MessageBoxW(nid.hWnd, ui(UI_ELEVATE_PROMPT), ui(UI_APP_NAME), MB_YESNO | MB_ICONQUESTION) == IDYES) {
-                relaunch_elevated(L"--auto");
-                return;
+                if (relaunch_elevated(L"--auto")) { PostQuitMessage(0); return; }
             }
             elevation_declined = 1;
         }
@@ -242,6 +244,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
             AppendMenuW(hMenu, MF_STRING, ID_TRAY_STARTUP, ui(UI_MENU_STARTUP));
             CheckMenuItem(hMenu, ID_TRAY_STARTUP, MF_BYCOMMAND | (is_startup_enabled() ? MF_CHECKED : MF_UNCHECKED));
+            AppendMenuW(hMenu, MF_STRING, ID_TRAY_ELEVATED, ui(UI_MENU_ELEVATED));
+            CheckMenuItem(hMenu, ID_TRAY_ELEVATED, MF_BYCOMMAND | (always_elevated ? MF_CHECKED : MF_UNCHECKED));
             AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
             AppendMenu(hMenu, MF_STRING, ID_TRAY_ABOUT, ui(UI_MENU_ABOUT));
             AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
@@ -298,6 +302,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
                 case ID_TRAY_ABOUT:
                     MessageBox(hwnd, ui(UI_ABOUT_TEXT), ui(UI_MENU_ABOUT), MB_OK | MB_ICONINFORMATION);
+                    break;
+
+                case ID_TRAY_ELEVATED:
+                    always_elevated = !always_elevated;
+                    CheckMenuItem(hMenu, ID_TRAY_ELEVATED, MF_BYCOMMAND | (always_elevated ? MF_CHECKED : MF_UNCHECKED));
+                    save_settings();
                     break;
 
                 case ID_TRAY_STARTUP:
@@ -374,6 +384,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         }
     }
     LocalFree(argv);
+
+    /* Before the mutex, so the elevated instance does not see this one as running. */
+    if (always_elevated && !IsUserAnAdmin() &&
+        relaunch_elevated(PathGetArgsW(GetCommandLineW()))) return 0;
 
     hMutex = CreateMutex(NULL, TRUE, L"LenovoFanControlMutex");
     if (GetLastError() == ERROR_ALREADY_EXISTS) {
