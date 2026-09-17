@@ -27,23 +27,18 @@ Remove-Item "$out\TemperatureMonitor.exe","$out\TemperatureMonitor.exe.config","
 if ($Test) {
     $tests = Join-Path $PSScriptRoot 'test-results'
     New-Item -ItemType Directory -Force $tests | Out-Null
-    & cl.exe /nologo /std:c11 /utf-8 /W4 /WX /MT /Fo"$tests\\" /Fe"$tests\auto_control_test.exe" tests/auto_control_test.c src/auto_control.c
-    Check-Exit
-    & "$tests\auto_control_test.exe"
-    Check-Exit
-    & cl.exe /nologo /std:c11 /utf-8 /W4 /WX /MT /Fo"$tests\\" /Fe"$tests\fan_worker_test.exe" tests/fan_worker_test.c src/fan_worker.c
-    Check-Exit
-    & "$tests\fan_worker_test.exe"
-    Check-Exit
-    & cl.exe /nologo /std:c11 /utf-8 /W4 /WX /MT /Fo"$tests\\" /Fe"$tests\TemperatureMonitor.exe" tests/fake_sensor.c
-    Check-Exit
-    & cl.exe /nologo /std:c11 /utf-8 /W4 /WX /D_CRT_SECURE_NO_WARNINGS /MT /Fo"$tests\\" /Fe"$tests\temperature_test.exe" tests/temperature_test.c src/temperature.c
-    Check-Exit
-    & "$tests\temperature_test.exe"
-    Check-Exit
-    & cl.exe /nologo /std:c11 /utf-8 /W4 /WX /D_CRT_SECURE_NO_WARNINGS /MT /Fo"$tests\\" /Fe"$tests\tray_ui_test.exe" tests/tray_ui_test.c src/fan_worker.c src/auto_control.c src/temperature.c "$out\icon.res" /link user32.lib shell32.lib advapi32.lib
-    Check-Exit
-    & "$tests\tray_ui_test.exe"
-    Check-Exit
+    # fake_sensor is built as TemperatureMonitor.exe for temperature_test; it is not a test itself.
+    $suites = @(
+        @{ Name = 'auto_control_test'; Args = @('tests/auto_control_test.c', 'src/auto_control.c') },
+        @{ Name = 'fan_worker_test'; Args = @('tests/fan_worker_test.c', 'src/fan_worker.c') },
+        @{ Name = 'TemperatureMonitor'; Args = @('tests/fake_sensor.c'); Fixture = $true },
+        @{ Name = 'temperature_test'; Args = @('tests/temperature_test.c', 'src/temperature.c') },
+        @{ Name = 'tray_ui_test'; Args = @('tests/tray_ui_test.c', 'src/fan_worker.c', 'src/auto_control.c', 'src/temperature.c', "$out\icon.res", '/link', 'user32.lib', 'shell32.lib', 'advapi32.lib') }
+    )
+    foreach ($suite in $suites) {
+        & cl.exe /nologo /std:c11 /utf-8 /W4 /WX /D_CRT_SECURE_NO_WARNINGS /MT /Fo"$tests\\" /Fe"$tests\$($suite.Name).exe" @($suite.Args)
+        Check-Exit
+        if (!$suite.Fixture) { & "$tests\$($suite.Name).exe"; Check-Exit }
+    }
 }
 Write-Host "Built $out\LenovoFanControl-$Architecture.exe"
