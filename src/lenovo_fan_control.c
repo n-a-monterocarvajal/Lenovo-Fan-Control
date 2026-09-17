@@ -21,8 +21,6 @@
 
 #define WM_TRAYICON (WM_USER + 1)
 
-#define VERSION "v0.6.1"
-
 enum TrayMenuIDs {
     ID_TRAY_APP_ICON = 1001,
     ID_TRAY_STATE,
@@ -44,92 +42,6 @@ enum HotKeyIDs {
     HOTKEY_NORMAL_SPEED,
 };
 
-typedef struct {
-    LPCWSTR app_name;
-    LPCWSTR note;
-    LPCWSTR program_is_running;
-    LPCWSTR failed_to_open_driver;
-    LPCWSTR state;
-    LPCWSTR menu_at_low_speed;
-    LPCWSTR menu_at_high_speed;
-    LPCWSTR menu_at_normal_speed;
-    LPCWSTR menu_low_speed;
-    LPCWSTR menu_high_speed;
-    LPCWSTR menu_normal_speed;
-    LPCWSTR menu_about;
-    LPCWSTR menu_exit;
-    LPCWSTR about_text;
-} LangResources;
-
-const LangResources en_US = {
-    TEXT("Lenovo Fan Control"),
-    TEXT("Note"),
-    TEXT("The program is running."),
-    TEXT("Failed to open \\\\.\\EnergyDrv. Unsupported device or something wrong with Lenovo ACPI-Compliant Virtual Power Controller driver."),
-    TEXT("State"),
-    TEXT("Low Speed"),
-    TEXT("High Speed"),
-    TEXT("Normal Speed"),
-    TEXT("Low Speed\tCtrl+Alt+F10"),
-    TEXT("High Speed\tCtrl+Alt+F11"),
-    TEXT("Normal Speed\tCtrl+Alt+F12"),
-    TEXT("About"),
-    TEXT("Exit"),
-    TEXT("Lenovo Fan Control " VERSION "\n\n\
-Control fan for Lenovo laptops with Lenovo ACPI-Compliant Virtual Power Controller driver on Windows.\n\n\
-Original: jiarandiana0307 (Kira Diana)\nhttps://github.com/jiarandiana0307/Lenovo-Fan-Control\n\n\
-Fork and temperature control: n-a-monterocarvajal\nhttps://github.com/n-a-monterocarvajal/Lenovo-Fan-Control\n\n\
-Sensors: LibreHardwareMonitor (MPL-2.0). Inspired by IdeaFan, by Andrius allstone Stasauskas.\n\n\
-Disclaimer: This program is not responsible for possible damage of any kind, use it at your own risk.")
-};
-
-const LangResources zh_CN = {
-    TEXT("联想风扇控制"),
-    TEXT("提示"),
-    TEXT("程序已经在运行中。"),
-    TEXT("无法访问\\\\.\\EnergyDrv。本设备不支持或Lenovo ACPI-Compliant Virtual Power Controller驱动异常。"),
-    TEXT("状态"),
-    TEXT("低转速"),
-    TEXT("高转速"),
-    TEXT("正常转速"),
-    TEXT("低转速\tCtrl+Alt+F10"),
-    TEXT("高转速\tCtrl+Alt+F11"),
-    TEXT("正常转速\tCtrl+Alt+F12"),
-    TEXT("关于"),
-    TEXT("退出"),
-    TEXT("联想风扇控制 " VERSION "\n\n\
-在Windows上通过Lenovo ACPI-Compliant Virtual Power Controller驱动控制联想笔记本电脑的风扇。\n\n\
-本程序已开源：https://github.com/jiarandiana0307/Lenovo-Fan-Control\n\n\
-Fork: n-a-monterocarvajal\nhttps://github.com/n-a-monterocarvajal/Lenovo-Fan-Control\n\n\
-免责声明：本程序不对任何可能的损坏负责，风险自担。")
-};
-
-const LangResources es = {
-    L"Lenovo Fan Control",
-    L"Aviso",
-    L"El programa ya está en ejecución.",
-    L"No se pudo acceder a \\\\.\\EnergyDrv. Comprueba que el equipo sea compatible y que esté instalado el controlador Lenovo ACPI-Compliant Virtual Power Controller.",
-    L"Estado",
-    L"Velocidad baja",
-    L"Velocidad alta",
-    L"Velocidad normal",
-    L"Velocidad baja\tCtrl+Alt+F10",
-    L"Velocidad alta\tCtrl+Alt+F11",
-    L"Velocidad normal\tCtrl+Alt+F12",
-    L"Acerca de",
-    L"Salir",
-    L"Lenovo Fan Control " VERSION L"\n\n"
-    L"Control del ventilador para portátiles Lenovo con el controlador Lenovo ACPI-Compliant Virtual Power Controller en Windows.\n\n"
-    L"Proyecto original: jiarandiana0307 (Kira Diana)\n"
-    L"https://github.com/jiarandiana0307/Lenovo-Fan-Control\n\n"
-    L"Fork y control por temperatura: n-a-monterocarvajal\n"
-    L"https://github.com/n-a-monterocarvajal/Lenovo-Fan-Control\n\n"
-    L"Lectura de sensores: LibreHardwareMonitor (MPL-2.0).\n"
-    L"Función inspirada en IdeaFan, de Andrius allstone Stašauskas.\n\n"
-    L"Uso bajo tu responsabilidad. El proyecto no se hace responsable de posibles daños."
-};
-
-const LangResources* lang = &en_US;
 NOTIFYICONDATA nid;
 HMENU hMenu;
 static enum FanSpeed current_speed = HIGH_SPEED;
@@ -186,7 +98,7 @@ static void save_settings(void) {
         !WritePrivateProfileStringW(L"Temperature", L"High", high, settings_path) ||
         !WritePrivateProfileStringW(L"Temperature", L"Normal", normal, settings_path) ||
         !WritePrivateProfileStringW(L"Temperature", L"Automatic", automatic ? L"1" : L"0", settings_path))
-        MessageBoxW(nid.hWnd, ui(UI_SAVE_ERROR), lang->app_name, MB_OK | MB_ICONWARNING);
+        MessageBoxW(nid.hWnd, ui(UI_SAVE_ERROR), ui(UI_APP_NAME), MB_OK | MB_ICONWARNING);
 }
 
 static void load_settings(void) {
@@ -223,8 +135,8 @@ static void poll_temperature(void) {
     else if (valid) swprintf(label, 160, ui(UI_CPU_ONLY), cpu);
     else wcscpy(label, ui(automatic ? UI_UNAVAILABLE_AUTO : UI_UNAVAILABLE_MANUAL));
     ModifyMenuW(hMenu, ID_TRAY_TEMPERATURE, MF_STRING | MF_DISABLED, ID_TRAY_TEMPERATURE, label);
-    speed_label = current_speed == HIGH_SPEED ? lang->menu_at_high_speed :
-        current_speed == LOW_SPEED ? lang->menu_at_low_speed : lang->menu_at_normal_speed;
+    speed_label = current_speed == HIGH_SPEED ? ui(UI_AT_HIGH) :
+        current_speed == LOW_SPEED ? ui(UI_AT_LOW) : ui(UI_AT_NORMAL);
     swprintf(state_label, 80, L"%ls (%ls)", speed_label, ui(automatic ? UI_AUTO : UI_MANUAL));
     ModifyMenuW(hMenu, ID_TRAY_STATE, MF_STRING | MF_DISABLED, ID_TRAY_STATE, state_label);
     swprintf(nid.szTip, 128, L"%.45ls\n%.80ls", state_label, label);
@@ -235,7 +147,7 @@ static int start_temperature_monitor(void) {
     temperature_start();
     if (SetTimer(nid.hWnd, 1, 1000, NULL)) return 1;
     temperature_stop();
-    MessageBoxW(nid.hWnd, ui(UI_TIMER_ERROR), lang->app_name, MB_OK | MB_ICONERROR);
+    MessageBoxW(nid.hWnd, ui(UI_TIMER_ERROR), ui(UI_APP_NAME), MB_OK | MB_ICONERROR);
     return 0;
 }
 
@@ -255,7 +167,7 @@ static void set_automatic(int enabled, int persist) {
     if (enabled) {
         double cpu, gpu;
         if (!IsUserAnAdmin() && !elevation_declined) {
-            if (MessageBoxW(nid.hWnd, ui(UI_ELEVATE_PROMPT), lang->app_name, MB_YESNO | MB_ICONQUESTION) == IDYES) {
+            if (MessageBoxW(nid.hWnd, ui(UI_ELEVATE_PROMPT), ui(UI_APP_NAME), MB_YESNO | MB_ICONQUESTION) == IDYES) {
                 relaunch_elevated(L"--auto");
                 return;
             }
@@ -315,16 +227,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
             nid.uCallbackMessage = WM_TRAYICON;
             nid.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_APPICON));
-            _tcscpy(nid.szTip, lang->app_name);
+            _tcscpy(nid.szTip, ui(UI_APP_NAME));
             Shell_NotifyIcon(NIM_ADD, &nid);
 
             hMenu = CreatePopupMenu();
-            AppendMenu(hMenu, MF_STRING | MF_DISABLED, ID_TRAY_STATE, lang->menu_at_high_speed);
+            AppendMenu(hMenu, MF_STRING | MF_DISABLED, ID_TRAY_STATE, ui(UI_AT_HIGH));
             AppendMenuW(hMenu, MF_STRING | MF_DISABLED, ID_TRAY_TEMPERATURE, ui(UI_LOADING));
             AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
-            AppendMenu(hMenu, MF_STRING, ID_TRAY_LOW_SPEED, lang->menu_low_speed);
-            AppendMenu(hMenu, MF_STRING, ID_TRAY_HIGH_SPEED, lang->menu_high_speed);
-            AppendMenu(hMenu, MF_STRING, ID_TRAY_NORMAL_SPEED, lang->menu_normal_speed);
+            AppendMenu(hMenu, MF_STRING, ID_TRAY_LOW_SPEED, ui(UI_MENU_LOW));
+            AppendMenu(hMenu, MF_STRING, ID_TRAY_HIGH_SPEED, ui(UI_MENU_HIGH));
+            AppendMenu(hMenu, MF_STRING, ID_TRAY_NORMAL_SPEED, ui(UI_MENU_NORMAL));
             AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
             AppendMenuW(hMenu, MF_STRING, ID_TRAY_AUTO, ui(UI_MENU_AUTO));
             AppendMenuW(hMenu, MF_STRING, ID_TRAY_SETTINGS, ui(UI_MENU_SETTINGS));
@@ -332,9 +244,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             AppendMenuW(hMenu, MF_STRING, ID_TRAY_STARTUP, ui(UI_MENU_STARTUP));
             CheckMenuItem(hMenu, ID_TRAY_STARTUP, MF_BYCOMMAND | (is_startup_enabled() ? MF_CHECKED : MF_UNCHECKED));
             AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
-            AppendMenu(hMenu, MF_STRING, ID_TRAY_ABOUT, lang->menu_about);
+            AppendMenu(hMenu, MF_STRING, ID_TRAY_ABOUT, ui(UI_MENU_ABOUT));
             AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
-            AppendMenu(hMenu, MF_STRING, ID_TRAY_EXIT, lang->menu_exit);
+            AppendMenu(hMenu, MF_STRING, ID_TRAY_EXIT, ui(UI_MENU_EXIT));
 
             set_speed(current_speed);
             if (automatic) set_automatic(1, 0);
@@ -386,7 +298,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                     break;
 
                 case ID_TRAY_ABOUT:
-                    MessageBox(hwnd, lang->about_text, lang->menu_about, MB_OK | MB_ICONINFORMATION);
+                    MessageBox(hwnd, ui(UI_ABOUT_TEXT), ui(UI_MENU_ABOUT), MB_OK | MB_ICONINFORMATION);
                     break;
 
                 case ID_TRAY_STARTUP:
@@ -442,8 +354,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     (void)lpCmdLine;
     (void)nCmdShow;
     LANGID system_lang = PRIMARYLANGID(GetUserDefaultLangID());
-    if (system_lang == LANG_SPANISH) { lang = &es; ui_language = 1; }
-    else if (system_lang == LANG_CHINESE) { lang = &zh_CN; ui_language = 2; }
+    if (system_lang == LANG_SPANISH) ui_language = 1;
+    else if (system_lang == LANG_CHINESE) ui_language = 2;
 
     int args;
     load_settings();
@@ -467,12 +379,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     hMutex = CreateMutex(NULL, TRUE, TEXT("LenovoFanControlMutex"));
     if (GetLastError() == ERROR_ALREADY_EXISTS) {
         CloseHandle(hMutex);
-        MessageBox(NULL, lang->program_is_running, lang->note, MB_OK | MB_ICONINFORMATION);
+        MessageBox(NULL, ui(UI_ALREADY_RUNNING), ui(UI_NOTE), MB_OK | MB_ICONINFORMATION);
         return 0;
     }
 
     if (read_state() == -1) {
-        MessageBox(NULL, lang->failed_to_open_driver, lang->app_name, MB_ICONEXCLAMATION | MB_OK);
+        MessageBox(NULL, ui(UI_DRIVER_ERROR), ui(UI_APP_NAME), MB_ICONEXCLAMATION | MB_OK);
         return 0;
     }
     WNDCLASSEX wc = {0};
@@ -487,7 +399,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     }
 
     if (!fan_worker_start()) return 1;
-    HWND hwnd = CreateWindowEx(0, TEXT("LenovoFanControlClass"), lang->app_name, 0, 0, 0, 0, 0, NULL, NULL, hInstance, NULL);
+    HWND hwnd = CreateWindowEx(0, TEXT("LenovoFanControlClass"), ui(UI_APP_NAME), 0, 0, 0, 0, 0, NULL, NULL, hInstance, NULL);
     if (hwnd == NULL) {
         fan_worker_stop();
         MessageBox(NULL, ui(UI_WINDOW_ERROR), ui(UI_ERROR), MB_ICONEXCLAMATION | MB_OK);

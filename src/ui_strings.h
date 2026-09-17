@@ -1,5 +1,6 @@
 #ifndef UI_STRINGS_H
 #define UI_STRINGS_H
+#define VERSION "v0.6.1"
 /* The original manual controls and these new controls share the Windows locale. */
 enum UiText {
     UI_SAVE_ERROR, UI_TEMPERATURE_PAIR, UI_CPU_ONLY, UI_UNAVAILABLE_AUTO,
@@ -7,7 +8,9 @@ enum UiText {
     UI_THRESHOLD_ERROR_TITLE, UI_MENU_AUTO, UI_MENU_SETTINGS, UI_LOADING,
     UI_REGISTER_ERROR, UI_WINDOW_ERROR, UI_ERROR, UI_SETTINGS_TITLE,
     UI_SETTINGS_HINT, UI_SETTINGS_HIGH, UI_SETTINGS_NORMAL, UI_SETTINGS_BAND,
-    UI_SAVE, UI_CANCEL, UI_MENU_STARTUP, UI_ELEVATE_PROMPT
+    UI_SAVE, UI_CANCEL, UI_MENU_STARTUP, UI_ELEVATE_PROMPT, UI_APP_NAME, UI_NOTE,
+    UI_ALREADY_RUNNING, UI_DRIVER_ERROR, UI_AT_LOW, UI_AT_HIGH, UI_AT_NORMAL,
+    UI_MENU_LOW, UI_MENU_HIGH, UI_MENU_NORMAL, UI_MENU_ABOUT, UI_MENU_EXIT, UI_ABOUT_TEXT
 };
 static int ui_language; /* 0 = English, 1 = Spanish, 2 = Chinese */
 static const wchar_t *const ui_strings[][3] = {
@@ -44,7 +47,41 @@ static const wchar_t *const ui_strings[][3] = {
       L"Si eliges que no, el programa sigue abierto sin permisos de administrador, y el modo\n"
       L"Automático va a mantener velocidad alta por precaución.",
       L"读取 CPU 温度需要管理员权限。是否现在以管理员身份重启？\n\n"
-      L"如果选择否，由于 CPU 温度仍不可用，自动模式将为安全起见请求高转速。" }
+      L"如果选择否，由于 CPU 温度仍不可用，自动模式将为安全起见请求高转速。" },
+    { L"Lenovo Fan Control", L"Lenovo Fan Control", L"联想风扇控制" },
+    { L"Note", L"Aviso", L"提示" },
+    { L"The program is running.", L"El programa ya está en ejecución.", L"程序已经在运行中。" },
+    { L"Failed to open \\\\.\\EnergyDrv. Unsupported device or something wrong with Lenovo ACPI-Compliant Virtual Power Controller driver.",
+      L"No se pudo acceder a \\\\.\\EnergyDrv. Comprueba que el equipo sea compatible y que esté instalado el controlador Lenovo ACPI-Compliant Virtual Power Controller.",
+      L"无法访问\\\\.\\EnergyDrv。本设备不支持或Lenovo ACPI-Compliant Virtual Power Controller驱动异常。" },
+    { L"Low Speed", L"Velocidad baja", L"低转速" },
+    { L"High Speed", L"Velocidad alta", L"高转速" },
+    { L"Normal Speed", L"Velocidad normal", L"正常转速" },
+    { L"Low Speed\tCtrl+Alt+F10", L"Velocidad baja\tCtrl+Alt+F10", L"低转速\tCtrl+Alt+F10" },
+    { L"High Speed\tCtrl+Alt+F11", L"Velocidad alta\tCtrl+Alt+F11", L"高转速\tCtrl+Alt+F11" },
+    { L"Normal Speed\tCtrl+Alt+F12", L"Velocidad normal\tCtrl+Alt+F12", L"正常转速\tCtrl+Alt+F12" },
+    { L"About", L"Acerca de", L"关于" },
+    { L"Exit", L"Salir", L"退出" },
+    { L"Lenovo Fan Control " VERSION L"\n\n"
+      L"Control fan for Lenovo laptops with Lenovo ACPI-Compliant Virtual Power Controller driver on Windows.\n\n"
+      L"Original: jiarandiana0307 (Kira Diana)\nhttps://github.com/jiarandiana0307/Lenovo-Fan-Control\n\n"
+      L"Fork and temperature control: n-a-monterocarvajal\nhttps://github.com/n-a-monterocarvajal/Lenovo-Fan-Control\n\n"
+      L"Sensors: LibreHardwareMonitor (MPL-2.0). Inspired by IdeaFan, by Andrius allstone Stasauskas.\n\n"
+      L"Disclaimer: This program is not responsible for possible damage of any kind, use it at your own risk.",
+      L"Lenovo Fan Control " VERSION L"\n\n"
+      L"Control del ventilador para portátiles Lenovo con el controlador Lenovo ACPI-Compliant Virtual Power Controller en Windows.\n\n"
+      L"Proyecto original: jiarandiana0307 (Kira Diana)\n"
+      L"https://github.com/jiarandiana0307/Lenovo-Fan-Control\n\n"
+      L"Fork y control por temperatura: n-a-monterocarvajal\n"
+      L"https://github.com/n-a-monterocarvajal/Lenovo-Fan-Control\n\n"
+      L"Lectura de sensores: LibreHardwareMonitor (MPL-2.0).\n"
+      L"Función inspirada en IdeaFan, de Andrius allstone Stašauskas.\n\n"
+      L"Uso bajo tu responsabilidad. El proyecto no se hace responsable de posibles daños.",
+      L"联想风扇控制 " VERSION L"\n\n"
+      L"在Windows上通过Lenovo ACPI-Compliant Virtual Power Controller驱动控制联想笔记本电脑的风扇。\n\n"
+      L"本程序已开源：https://github.com/jiarandiana0307/Lenovo-Fan-Control\n\n"
+      L"Fork: n-a-monterocarvajal\nhttps://github.com/n-a-monterocarvajal/Lenovo-Fan-Control\n\n"
+      L"免责声明：本程序不对任何可能的损坏负责，风险自担。" }
 };
 static const wchar_t *ui(enum UiText text) { return ui_strings[text][ui_language]; }
 #endif
