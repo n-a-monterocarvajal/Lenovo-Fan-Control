@@ -415,10 +415,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         DispatchMessage(&msg);
     }
 
-    UnregisterHotKey(hwnd, HOTKEY_LOW_SPEED);
-    UnregisterHotKey(hwnd, HOTKEY_HIGH_SPEED);
-    UnregisterHotKey(hwnd, HOTKEY_NORMAL_SPEED);
-
     if (hMutex) {
         ReleaseMutex(hMutex);
         CloseHandle(hMutex);
