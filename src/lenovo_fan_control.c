@@ -9,6 +9,7 @@
 #include <Windows.h>
 #include <tchar.h>
 #include <shlobj.h>
+#include <shellapi.h>
 #include <wchar.h>
 
 #include "fanctrl.h"
@@ -20,7 +21,7 @@
 
 #define WM_TRAYICON (WM_USER + 1)
 
-#define VERSION "v0.6"
+#define VERSION "v0.6.1"
 
 enum TrayMenuIDs {
     ID_TRAY_APP_ICON = 1001,
@@ -133,6 +134,8 @@ HMENU hMenu;
 enum FanSpeed fan_speed_set_at_start = HIGH_SPEED;
 static enum FanSpeed current_speed = HIGH_SPEED;
 static int automatic, high_threshold = 70, normal_threshold = 65, auto_high = 1;
+static int elevation_declined;
+static HANDLE hMutex;
 static WCHAR settings_path[MAX_PATH];
 
 #define STARTUP_KEY L"Software\\Microsoft\\Windows\\CurrentVersion\\Run"
@@ -254,10 +257,28 @@ static int start_temperature_monitor(void) {
     return 0;
 }
 
+/* EnergyDrv (fan control) works fine unelevated; only CPU MSR access via PawnIO
+   needs Administrator. Relaunch elevated only when the user opts into Automatic
+   mode, instead of forcing UAC on every launch just for manual speed control. */
+static void relaunch_elevated(LPCWSTR extra_arg) {
+    WCHAR path[MAX_PATH];
+    if (!GetModuleFileNameW(NULL, path, MAX_PATH)) return;
+    if (hMutex) ReleaseMutex(hMutex);
+    if ((INT_PTR)ShellExecuteW(NULL, L"runas", path, extra_arg, NULL, SW_SHOWNORMAL) > 32)
+        PostQuitMessage(0);
+}
+
 static void set_automatic(int enabled, int persist) {
     automatic = enabled;
     if (enabled) {
         double cpu, gpu;
+        if (!IsUserAnAdmin() && !elevation_declined) {
+            if (MessageBoxW(nid.hWnd, ui(UI_ELEVATE_PROMPT), lang->app_name, MB_YESNO | MB_ICONQUESTION) == IDYES) {
+                relaunch_elevated(L"--auto");
+                return;
+            }
+            elevation_declined = 1;
+        }
         auto_high = 1;
         toggle_fan_high_speed();
         if (!temperature_read(&cpu, &gpu) && !start_temperature_monitor()) automatic = 0;
@@ -483,7 +504,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     }
     LocalFree(argv);
 
-    HANDLE hMutex = CreateMutex(NULL, TRUE, TEXT("LenovoFanControlMutex"));
+    hMutex = CreateMutex(NULL, TRUE, TEXT("LenovoFanControlMutex"));
     if (GetLastError() == ERROR_ALREADY_EXISTS) {
         CloseHandle(hMutex);
         MessageBox(NULL, lang->program_is_running, lang->note, MB_OK | MB_ICONINFORMATION);

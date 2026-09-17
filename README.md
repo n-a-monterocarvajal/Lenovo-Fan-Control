@@ -1,140 +1,205 @@
-# Lenovo Laptop Fan Control
+# Control de ventilador para laptops Lenovo
 
-Language: [Español](README.es.md) | [中文](README.zh_CN.md)
+Language: [English](README.en.md) | [中文](README.zh_CN.md)
 
 ---
 
-Control fan for Lenovo laptops with `Lenovo ACPI-Compliant Virtual Power Controller` driver on Windows.
+Controla el ventilador de laptops Lenovo que tienen el controlador `Lenovo ACPI-Compliant Virtual Power Controller` en Windows.
 
-This project is for the Lenovo laptops whose fan failed to be controlled with mainstream fan control applications (e.g. Notebook FanControl, SpeedFan, Fan Control) on Windows.
+Este proyecto es para las laptops Lenovo cuyo ventilador no se puede controlar con las aplicaciones de control de ventilador más conocidas (por ejemplo Notebook FanControl, SpeedFan, Fan Control) en Windows.
 
-However, this project is not a perfect solution for fan control. It can only control the fan to spin at the minimum speed, maximum speed and the normal speed, and dosen't provide any accurate speed control.
+Sin embargo, este proyecto no es una solución perfecta para el control de ventilador. Solo puede hacer que el ventilador gire a velocidad mínima, máxima o normal, sin ningún control de velocidad preciso.
 
-This fork adds optional temperature thresholds to the original tray application.
-It switches between High Speed and the laptop's Normal Speed automatically,
-without installing the FanControl or Open Hardware Monitor applications.
-For full fan curves, [FanControl](https://github.com/Rem0o/FanControl.Releases)
-and [FanControl.LenovoPlugin](https://github.com/jiarandiana0307/FanControl.LenovoPlugin)
-remain alternatives.
+Este fork agrega umbrales de temperatura opcionales a la aplicación de bandeja original. Cambia entre Velocidad alta y la Velocidad normal de la laptop de forma automática, sin necesidad de instalar FanControl ni Open Hardware Monitor. Para curvas de ventilador completas, [FanControl](https://github.com/Rem0o/FanControl.Releases) y [FanControl.LenovoPlugin](https://github.com/jiarandiana0307/FanControl.LenovoPlugin) siguen siendo alternativas.
 
-## Automatic temperature control
+## Control automático por temperatura
 
-1. `LenovoFanControl-x64.exe` (or `-x86.exe`) is the only executable; the
-   LibreHardwareMonitor-based sensor helper is embedded in it, not a separate file.
-2. The exe requests administrator elevation itself (UAC prompt) on launch;
-   accept it. On first elevated run it silently installs the [PawnIO sensor
-   driver](https://pawnio.eu/) if missing (its signed installer ships embedded
-   too). The existing Lenovo EnergyDrv driver is still required and is not
-   installed automatically. The embedded sensor helper needs .NET Framework
-   4.7.2 or later, already present
-   on Windows 10/11.
-3. Open **Temperature thresholds...** in the tray menu. Defaults are **70 C**
-   to enter High Speed and **65 C** to return to Normal Speed.
-4. Check **Automatic (temperature)**, or start with `--auto`.
+1. `LenovoFanControl-x64.exe` (o `-x86.exe`) es el único ejecutable: el lector
+   de sensores LibreHardwareMonitor va incrustado dentro, no es un archivo
+   aparte. Se descarga directo, sin ZIP ni instalador.
+2. El control manual de velocidad y el driver EnergyDrv de Lenovo no
+   necesitan administrador, así que el programa abre sin pedir UAC. Leer la
+   temperatura de CPU sí lo necesita: activar **Automático por temperatura**
+   sin estar elevado ofrece reiniciar el programa como administrador, y en
+   ese primer arranque elevado instala en silencio el
+   [driver PawnIO](https://pawnio.eu/) si falta (su instalador firmado
+   también va incrustado). Si elegís que no, el programa sigue sin elevar,
+   pero Automático va a pedir velocidad alta por seguridad, porque la
+   temperatura de CPU sigue sin estar disponible. El lector de sensores
+   incrustado necesita .NET Framework 4.7.2 o posterior, ya presente en
+   Windows 10/11.
+3. Abrí **Umbrales de temperatura...** en el menú de bandeja. Los valores
+   iniciales son **70 °C** para entrar en Velocidad alta y **65 °C** para
+   volver a Velocidad normal.
+4. Activá **Automático por temperatura**, o iniciá con `--auto`.
 
-The menu shows current CPU and GPU readings. CPU Package (or AMD die temperature)
-is preferred; otherwise the highest available absolute CPU temperature is used.
-The primary GPU Core temperature is used for each detected GPU. The hottest
-CPU/GPU value controls the fan: either can trigger High Speed; all monitored
-readings must be at or below the lower threshold to return to Normal Speed.
-GPU hotspot, VRAM, disks, motherboard sensors and Distance to TjMax are excluded.
-A GPU without a supported core sensor is shown as unavailable; CPU monitoring
-is required. If a previously readable GPU stops reporting, that is a sensor failure.
+El menú muestra las lecturas actuales de CPU y GPU. Se prefiere CPU Package
+(o la temperatura de die en AMD); si no está disponible, se usa la mayor
+temperatura absoluta de CPU que haya. Para cada GPU detectada se usa su
+temperatura GPU Core. El valor más alto entre CPU y GPU controla el
+ventilador: cualquiera de los dos puede disparar Velocidad alta; todas las
+lecturas monitoreadas deben estar en el umbral inferior o por debajo para
+volver a Velocidad normal. Se excluyen hotspot de GPU, memoria de video,
+discos, sensores de placa base y Distance to TjMax. Una GPU sin sensor de
+núcleo compatible se muestra como no disponible; la CPU sí es obligatoria.
+Si una GPU que antes se leía bien deja de responder, se trata como un fallo
+de sensor.
 
-The speed and temperatures are the two informational rows at the top of the tray
-menu. Temperatures remain visible in manual mode. Complete English and neutral
-Spanish controls are selected from the Windows language, as well as Chinese.
-About credits both the original author and this fork.
+Las dos filas informativas en la parte superior del menú de bandeja muestran
+la velocidad y las temperaturas. Las temperaturas quedan visibles también en
+modo manual. La interfaz usa español neutro e inglés completos, seleccionados
+según el idioma de Windows, además de chino. «Acerca de» incluye los créditos
+del autor original y de este fork.
 
-Between the two thresholds the previous speed is retained (hysteresis).
+Entre ambos umbrales se mantiene la velocidad anterior (histéresis).
 
-**Start with Windows** in the tray menu adds/removes a per-user Run registry
-entry (no installer, no scheduled task). Since the app still needs
-Administrator for EnergyDrv, Windows will still prompt for UAC at every login
-when this is on.
-Settings accept `20 <= Normal < High <= 100` degrees Celsius. Defaults are starting
-points, not hardware-specific maximum temperatures. Readings arrive every two
-seconds. Missing, invalid or stale readings (10 seconds without an update) request
-High Speed and show **Temperature unavailable**. Startup also requests High Speed
-until a fresh reading arrives. After resolving a sensor/driver problem, toggle
-Automatic off and on to restart the sensor helper.
+**Iniciar con Windows**, en el menú de bandeja, agrega o quita una entrada en
+el registro (Run del usuario actual), sin instalador ni tarea programada.
+Arranca sin elevar, igual que un doble clic normal; el modo Automático sigue
+pidiendo elevación la primera vez que necesita leer la CPU.
 
-Choosing any manual speed or its hotkey disables Automatic but keeps temperature
-monitoring active. Unchecking Automatic
-returns to Normal Speed. Settings persist in
-`%LOCALAPPDATA%\LenovoFanControl\settings.ini`; manual command-line speed flags
-override saved Automatic for that launch. Manual Low Speed has no thermal override.
+Los umbrales aceptan `20 ≤ Normal < Alta ≤ 100` grados Celsius. Los valores
+iniciales son un punto de partida, no temperaturas máximas seguras para tu
+hardware específico. Las lecturas llegan cada dos segundos aproximadamente.
+Si faltan, son inválidas, o pasan diez segundos sin una lectura nueva, se
+pide Velocidad alta y se muestra **Temperatura no disponible**. Al iniciar
+también se pide Velocidad alta hasta que llegue una lectura válida. Después
+de resolver un problema de sensor o driver, desactivá y volvé a activar
+Automático para reiniciar el lector.
 
-Unlike IdeaFan's broader set of OHM temperatures, this mode deliberately monitors
-CPU/GPU cooling. It preserves the Lenovo dust-removal method and its limitations;
-High Speed is a requested mode, not a measurement of fan RPM.
+Elegir cualquier velocidad manual, o su atajo de teclado, desactiva
+Automático pero mantiene activa la lectura de temperaturas. Desmarcar
+Automático vuelve a Velocidad normal. Los ajustes se guardan en
+`%LOCALAPPDATA%\LenovoFanControl\settings.ini`; los parámetros de línea de
+comandos para velocidad manual tienen prioridad sobre un Automático guardado,
+solo para ese inicio. La Velocidad baja manual no tiene ninguna protección
+térmica.
 
-## Build and test this fork
+A diferencia del conjunto más amplio de temperaturas OHM de IdeaFan, este
+modo monitorea deliberadamente solo la refrigeración de CPU/GPU. Conserva el
+método de eliminación de polvo original de Lenovo y sus limitaciones:
+Velocidad alta es un modo solicitado, no una medición real de las RPM del
+ventilador.
 
-Install Visual Studio 2022 Build Tools with **Desktop development with C++**, a
-Windows SDK, and a .NET SDK. From PowerShell:
+## Compilación y verificación de este fork
+
+Instalá Visual Studio 2022 Build Tools con **Desktop development with C++**,
+un Windows SDK y un SDK de .NET. Desde PowerShell:
 
 ```powershell
 ./build.ps1 -Architecture x64 -Test
 ./build.ps1 -Architecture x86 -Test
 ```
 
-`bin/x64/LenovoFanControl-x64.exe` and `bin/x86/LenovoFanControl-x86.exe` are
-the distributables; the sensor helper and its dependencies are merged into
-them, nothing else needs to ship alongside. Tests simulate temperature traces and
-driver calls, and exercise the English/Spanish tray and settings dialog;
-they do not operate the real fan. Hardware compatibility must still
-be checked on the target Lenovo laptop. The original MinGW Makefile builds the
-native application only; `build.ps1` also builds/packages the sensor helper.
-See [third-party dependencies](THIRD-PARTY-NOTICES.md).
+`bin/x64/LenovoFanControl-x64.exe` y `bin/x86/LenovoFanControl-x86.exe` son
+los distribuibles; el lector de sensores y sus dependencias quedan
+fusionados adentro, no hace falta nada más junto a ellos. Las pruebas
+simulan lecturas de temperatura y llamadas al driver, y ejercitan la bandeja
+y el diálogo de ajustes en español e inglés; no operan el ventilador real.
+La compatibilidad de hardware todavía debe comprobarse en la laptop Lenovo
+de destino. El Makefile original de MinGW solo compila la aplicación nativa;
+`build.ps1` también compila y empaqueta el lector de sensores. Ver
+[dependencias de terceros](THIRD-PARTY-NOTICES.md).
 
-# Prerequisites
+# Requisitos
 
-- Lenovo laptop
-- Windows operating system
-- `Lenovo ACPI-Compliant Virtual Power Controller` driver installed
+- Laptop Lenovo
+- Sistema operativo Windows
+- Driver `Lenovo ACPI-Compliant Virtual Power Controller` instalado
 
-# Usage
+# Uso
 
-1. Build this fork as described above. The [upstream releases](https://github.com/jiarandiana0307/Lenovo-Fan-Control/releases) do not contain the automatic temperature option.
+1. Compilá este fork como se describe arriba. Las [versiones del repositorio
+   original](https://github.com/jiarandiana0307/Lenovo-Fan-Control/releases)
+   no incluyen la opción de temperatura automática.
 
-2. Double-click the LenovoFanControl program to run it, then you will see it in system tray.
+2. Hacé doble clic en el programa LenovoFanControl para ejecutarlo; vas a
+   verlo en la bandeja del sistema.
 
-If a message box saying `Failed to open\\.\EnergyDrv` popped up, it means the Lenovo driver not found or dosen't work as expected. Otherwise, the program works fine and the fan will spin at maximum speed.
+Si aparece un mensaje `Failed to open\\.\EnergyDrv`, significa que no se
+encontró el driver de Lenovo o que no funciona como se espera. Si no aparece
+ningún mensaje, el programa funciona bien y el ventilador va a girar a
+velocidad máxima.
 
-![Menu Screenshot](github/menu-screenshot.jpg)
+![Captura del menú](github/menu-screenshot.jpg)
 
-Click the program icon in the system tray, a menu will show up. The first line of the menu tell you the state of the fan, which could be one of the three: 
+Al hacer clic en el ícono del programa en la bandeja se abre un menú. La
+primera línea del menú indica el estado del ventilador, que puede ser uno de
+estos tres:
 
-1. `Low Speed`: the fan is spinning at minimum speed.
-2. `High Speed`: the fan is spinning at maximum speed.
-3. `Normal Speed`: the fan is spinning at normal speed.
+1. `Low Speed`: el ventilador gira a velocidad mínima.
+2. `High Speed`: el ventilador gira a velocidad máxima.
+3. `Normal Speed`: el ventilador gira a velocidad normal.
 
-You can click the `Low Speed` and `High Speed` item on the menu, or use the corresponding hotkeys `Ctrl+Alt+F10` and `Ctrl+Alt+F11` to keep the fan spinning at minimun and maximum speed respectively. Also, you can click the `Normal Speed` item on the menu or use the corresponding hotkey `Ctrl+Alt+F12` to return the fan to its normal speed.
+Podés hacer clic en `Low Speed` y `High Speed` en el menú, o usar los atajos
+`Ctrl+Alt+F10` y `Ctrl+Alt+F11`, para mantener el ventilador en velocidad
+mínima y máxima respectivamente. También podés hacer clic en `Normal Speed`
+o usar el atajo `Ctrl+Alt+F12` para devolver el ventilador a su velocidad
+normal.
 
-Finally, you can click the `Exit` item on the menu to terminate the program, then the fan will spin at normal speed.
+Por último, podés hacer clic en `Exit` en el menú para cerrar el programa; el
+ventilador vuelve entonces a velocidad normal.
 
-To select the start speed of the fan, you can run the program with command line parameter `--low-speed`, `--normal-speed` and `--high-speed`, which will set the fan to low speed, normal speed and high speed at start respectively. The default behavior is to set the fan to high speed if non of these parameters are given. For example, if you want to keep the fan spinning at low speed at start, you can run the command: `LenovoFanControl-x64.exe --low-speed`
+Para elegir la velocidad inicial del ventilador, podés ejecutar el programa
+con el parámetro de línea de comandos `--low-speed`, `--normal-speed` o
+`--high-speed`, que ponen el ventilador en velocidad baja, normal o alta al
+iniciar, respectivamente. El comportamiento por defecto, sin ninguno de estos
+parámetros, es velocidad alta. Por ejemplo, para mantener el ventilador en
+velocidad baja al iniciar, ejecutá: `LenovoFanControl-x64.exe --low-speed`
 
-**Note:** Manual `Low Speed` disables automatic temperature control and can lead to high hardware temperatures. Automatic mode never selects Low Speed.
+**Nota:** la `Low Speed` manual desactiva el control automático por
+temperatura y puede provocar temperaturas de hardware altas. El modo
+automático nunca elige Velocidad baja por su cuenta.
 
-# Theory
+# Cómo funciona
 
-Normally, fan in laptop is controlled by Embedded Controller (EC) which is a device responsible for feeding other parts of the system the electric voltage they need. Therefore if EC pass more voltage to the cooling system, this cause fan to spins at maximum speed. For controlling the EC we can change the EC registers to achieve functionality we want, but for some models, we can't find the registers which was dedicated to controlling the fan speed from datasheets. So one reverse engineering the Lenovo Energy Manager software to find how Dust Removal feature of this app actually works and build this program with it. Then it turns out that this software communicate to the EC through `Lenovo ACPI-Compliant Virtual Power Controller` kernel driver. And it's exactly how this project works.
+Normalmente, el ventilador de una laptop lo controla el Embedded Controller
+(EC), un dispositivo encargado de suministrarles a las demás partes del
+sistema el voltaje que necesitan. Por eso, si el EC le pasa más voltaje al
+sistema de refrigeración, el ventilador gira a velocidad máxima. Para
+controlar el EC se pueden cambiar sus registros y así lograr el
+comportamiento que se busca, pero en algunos modelos esos registros
+dedicados al ventilador no figuran en las hojas de datos. Por eso alguien
+hizo ingeniería inversa de Lenovo Energy Manager para entender cómo funciona
+realmente su función de eliminación de polvo, y construyó este programa a
+partir de eso. Resultó que ese software se comunica con el EC a través del
+driver de kernel `Lenovo ACPI-Compliant Virtual Power Controller`. Así es
+exactamente como funciona este proyecto.
 
-If you have `Lenovo ACPI-Compliant Virtual Power Controller` driver installed, there will be a `\\.\EnergyDrv` device on your system. This device is created by the Lenovo driver to expose the interfaces for communication with other applications, e.g. Lenovo Energy Manager. The driver provides a dust removal function that can control the fan. Therefore, with win32 API, it's easy to read and write specific bytes of the device to control the Lenovo driver, then the driver controls EC, and the EC controls the fan. See the diagram below.
+Si tenés instalado el driver `Lenovo ACPI-Compliant Virtual Power
+Controller`, tu sistema tiene un dispositivo `\\.\EnergyDrv`. Este
+dispositivo lo crea el driver de Lenovo para exponer una interfaz de
+comunicación con otras aplicaciones, como Lenovo Energy Manager. El driver
+ofrece una función de eliminación de polvo que puede controlar el
+ventilador. Entonces, con la API de Win32, es fácil leer y escribir bytes
+específicos del dispositivo para controlar el driver de Lenovo, que a su vez
+controla el EC, que a su vez controla el ventilador. Ver el diagrama abajo.
 
-![Diagram](github/diagram.jpg)
+![Diagrama](github/diagram.jpg)
 
-But there is a problem with this approach, the fan spins periodically. After we instruct the driver to carry out dust removal, the fan spins at maximum speed for about 9 seconds then stops for 2 seconds, and then the next cycle until 2min later. The dust removal is controlled automatically by EC itself, and sometimes may suddenly stop during the 9 seconds of spinning which leads to fan stop spinning for something for 1 to 9 seconds.
+Pero este enfoque tiene un problema: el ventilador gira de forma
+intermitente. Después de pedirle al driver que ejecute la eliminación de
+polvo, el ventilador gira a velocidad máxima unos 9 segundos, se detiene 2
+segundos, y así hasta que pasan 2 minutos. La eliminación de polvo la
+controla el propio EC de forma automática, y a veces se detiene de golpe en
+medio de esos 9 segundos, lo que deja al ventilador parado entre 1 y 9
+segundos.
 
-For workaround about this problem, firstly, we ask the driver to carry out dust removal, wait for 9 seconds. Then we ask the driver to stop the procedure manually to reset the timing. Finally, we ask the driver to start over the procedure immediately before the fan stop spinning. And then wait for another 9 seconds, then stop, then the next cycle and so on. With the fast on and off switching, the fan won't stop and will spin at the maximum speed all the time except that the speed of the fan will slow down a little bit for a short period of time during the switching time.
+Como workaround, primero le pedimos al driver que ejecute la eliminación de
+polvo y esperamos 9 segundos. Después le pedimos manualmente que detenga el
+procedimiento, para reiniciar el conteo. Por último, le pedimos que vuelva a
+empezar el procedimiento justo antes de que el ventilador se detenga.
+Esperamos otros 9 segundos, lo detenemos, y así en ciclo. Con esta
+alternancia rápida entre inicio y parada, el ventilador no llega a
+detenerse y gira a velocidad máxima casi todo el tiempo, salvo por una breve
+caída de velocidad durante cada cambio.
 
-# Disclaimer
+# Descargo de responsabilidad
 
-This project is not responsible for possible damage of any kind, use it at your own risk.
+Este proyecto no se hace responsable de ningún daño posible; usalo bajo tu
+propio riesgo.
 
-# References
+# Referencias
 
 - [IdeaFan][IdeaFan]
 - [FanControl][FanControl]

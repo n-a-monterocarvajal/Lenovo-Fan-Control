@@ -37,6 +37,7 @@ int main(void) {
         ui_language = language;
         lang = language ? &es : &en_US;
         automatic = 0;
+        elevation_declined = 1; /* skip the UAC-relaunch prompt; not what this test covers */
         high_threshold = 70; normal_threshold = 65;
         fan_speed_set_at_start = NORMAL_SPEED;
         GetFullPathNameW(L"test-results\\ui-settings.ini", MAX_PATH, settings_path, NULL);

@@ -7,7 +7,7 @@ enum UiText {
     UI_THRESHOLD_ERROR_TITLE, UI_MENU_AUTO, UI_MENU_SETTINGS, UI_LOADING,
     UI_REGISTER_ERROR, UI_WINDOW_ERROR, UI_ERROR, UI_SETTINGS_TITLE,
     UI_SETTINGS_HINT, UI_SETTINGS_HIGH, UI_SETTINGS_NORMAL, UI_SETTINGS_BAND,
-    UI_SAVE, UI_CANCEL, UI_MENU_STARTUP
+    UI_SAVE, UI_CANCEL, UI_MENU_STARTUP, UI_ELEVATE_PROMPT
 };
 static int ui_language; /* 0 = English, 1 = Spanish, 2 = Chinese */
 static const wchar_t *const ui_strings[][3] = {
@@ -36,7 +36,15 @@ static const wchar_t *const ui_strings[][3] = {
       L"在两个阈值之间风扇保持原有模式，避免频繁切换。" },
     { L"Save", L"Guardar", L"保存" },
     { L"Cancel", L"Cancelar", L"取消" },
-    { L"Start with Windows", L"Iniciar con Windows", L"开机启动" }
+    { L"Start with Windows", L"Iniciar con Windows", L"开机启动" },
+    { L"Reading CPU temperature needs administrator privileges. Restart elevated now?\n\n"
+      L"If you say no, Automatic mode will request High Speed for safety, since CPU\n"
+      L"temperature stays unavailable.",
+      L"Leer la temperatura de CPU necesita permisos de administrador. ¿Reiniciar ahora como administrador?\n\n"
+      L"Si elegís que no, el modo Automático va a pedir velocidad alta por seguridad,\n"
+      L"porque la temperatura de CPU sigue sin estar disponible.",
+      L"读取 CPU 温度需要管理员权限。是否现在以管理员身份重启？\n\n"
+      L"如果选择否，由于 CPU 温度仍不可用，自动模式将为安全起见请求高转速。" }
 };
 static const wchar_t *ui(enum UiText text) { return ui_strings[text][ui_language]; }
 #endif
