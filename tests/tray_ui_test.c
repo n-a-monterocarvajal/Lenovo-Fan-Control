@@ -35,7 +35,6 @@ int main(void) {
         WCHAR text[256];
         double cpu, gpu;
         ui_language = language;
-        lang = language ? &es : &en_US;
         automatic = 0;
         elevation_declined = 1; /* skip the UAC-relaunch prompt; not what this test covers */
         high_threshold = 70; normal_threshold = 65;
@@ -81,7 +80,7 @@ int main(void) {
         SetDlgItemInt(dialog, IDC_NORMAL_TEMP, 50, FALSE);
         SendMessageW(dialog, WM_COMMAND, IDOK, 0);
         assert(current_speed == NORMAL_SPEED); /* Editing thresholds re-decides immediately. */
-        assert(wcsstr(lang->about_text, L"n-a-monterocarvajal"));
+        assert(wcsstr(ui(UI_ABOUT_TEXT), L"n-a-monterocarvajal"));
         DestroyWindow(dialog);
         SendMessageW(window, WM_COMMAND, ID_TRAY_NORMAL_SPEED, 0);
         assert(!automatic && temperature_read(&cpu, &gpu));
