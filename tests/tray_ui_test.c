@@ -39,7 +39,7 @@ int main(void) {
         automatic = 0;
         elevation_declined = 1; /* skip the UAC-relaunch prompt; not what this test covers */
         high_threshold = 70; normal_threshold = 65;
-        fan_speed_set_at_start = NORMAL_SPEED;
+        current_speed = NORMAL_SPEED;
         GetFullPathNameW(L"test-results\\ui-settings.ini", MAX_PATH, settings_path, NULL);
         assert(fan_worker_start());
         HWND window = CreateWindowW(cls.lpszClassName, L"Test", 0, 0, 0, 0, 0,
@@ -75,7 +75,7 @@ int main(void) {
         /* Widen the band around the current 71.5C reading while auto_high is stale
            at HIGH: the new band (50-90) shouldn't blindly keep that old verdict. */
         auto_high = 1;
-        toggle_fan_high_speed();
+        set_speed(HIGH_SPEED);
         assert(current_speed == HIGH_SPEED);
         SetDlgItemInt(dialog, IDC_HIGH_TEMP, 90, FALSE);
         SetDlgItemInt(dialog, IDC_NORMAL_TEMP, 50, FALSE);
