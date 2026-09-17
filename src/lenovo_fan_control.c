@@ -37,9 +37,10 @@ enum TrayMenuIDs {
     ID_TRAY_STARTUP,
 };
 
+/* Same order as enum FanSpeed, so a hotkey ID is its speed. */
 enum HotKeyIDs {
-    HOTKEY_LOW_SPEED,
     HOTKEY_HIGH_SPEED,
+    HOTKEY_LOW_SPEED,
     HOTKEY_NORMAL_SPEED,
 };
 
@@ -131,7 +132,6 @@ const LangResources es = {
 const LangResources* lang = &en_US;
 NOTIFYICONDATA nid;
 HMENU hMenu;
-enum FanSpeed fan_speed_set_at_start = HIGH_SPEED;
 static enum FanSpeed current_speed = HIGH_SPEED;
 static int automatic, high_threshold = 70, normal_threshold = 65, auto_high = 1;
 static int elevation_declined;
@@ -203,28 +203,10 @@ static void load_settings(void) {
     automatic = GetPrivateProfileIntW(L"Temperature", L"Automatic", 0, settings_path) == 1;
 }
 
-void toggle_fan_low_speed() {
-    current_speed = LOW_SPEED;
-    ModifyMenu(hMenu, ID_TRAY_STATE, MF_STRING | MF_DISABLED, ID_TRAY_STATE, lang->menu_at_low_speed);
-    fan_worker_set(LOW_SPEED);
-    swprintf(nid.szTip, 128, L"%ls " VERSION L"\n%ls: %ls", lang->app_name, lang->state, lang->menu_at_low_speed);
-    Shell_NotifyIcon(NIM_MODIFY, &nid);
-}
-
-void toggle_fan_high_speed() {
-    current_speed = HIGH_SPEED;
-    ModifyMenu(hMenu, ID_TRAY_STATE, MF_STRING | MF_DISABLED, ID_TRAY_STATE, lang->menu_at_high_speed);
-    fan_worker_set(HIGH_SPEED);
-    swprintf(nid.szTip, 128, L"%ls " VERSION L"\n%ls: %ls", lang->app_name, lang->state, lang->menu_at_high_speed);
-    Shell_NotifyIcon(NIM_MODIFY, &nid);
-}
-
-void toggle_fan_normal_speed() {
-    current_speed = NORMAL_SPEED;
-    ModifyMenu(hMenu, ID_TRAY_STATE, MF_STRING | MF_DISABLED, ID_TRAY_STATE, lang->menu_at_normal_speed);
-    fan_worker_set(NORMAL_SPEED);
-    swprintf(nid.szTip, 128, L"%ls " VERSION L"\n%ls: %ls", lang->app_name, lang->state, lang->menu_at_normal_speed);
-    Shell_NotifyIcon(NIM_MODIFY, &nid);
+/* poll_temperature() refreshes the menu and tooltip after every call. */
+static void set_speed(enum FanSpeed speed) {
+    current_speed = speed;
+    fan_worker_set(speed);
 }
 
 static void poll_temperature(void) {
@@ -235,7 +217,7 @@ static void poll_temperature(void) {
     LPCWSTR speed_label;
     if (automatic) {
         auto_high = auto_should_run_high(auto_high, celsius, valid, high_threshold, normal_threshold);
-        if (auto_high) toggle_fan_high_speed(); else toggle_fan_normal_speed();
+        set_speed(auto_high ? HIGH_SPEED : NORMAL_SPEED);
     }
     if (valid && gpu >= 0) swprintf(label, 160, ui(UI_TEMPERATURE_PAIR), cpu, gpu);
     else if (valid) swprintf(label, 160, ui(UI_CPU_ONLY), cpu);
@@ -280,7 +262,7 @@ static void set_automatic(int enabled, int persist) {
             elevation_declined = 1;
         }
         auto_high = 1;
-        toggle_fan_high_speed();
+        set_speed(HIGH_SPEED);
         if (!temperature_read(&cpu, &gpu) && !start_temperature_monitor()) automatic = 0;
     }
     CheckMenuItem(hMenu, ID_TRAY_AUTO, MF_BYCOMMAND | (automatic ? MF_CHECKED : MF_UNCHECKED));
@@ -354,17 +336,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
             AppendMenu(hMenu, MF_STRING, ID_TRAY_EXIT, lang->menu_exit);
 
-            switch (fan_speed_set_at_start) {
-                case LOW_SPEED:
-                    toggle_fan_low_speed();
-                    break;
-                case HIGH_SPEED:
-                    toggle_fan_high_speed();
-                    break;
-                case NORMAL_SPEED:
-                    toggle_fan_normal_speed();
-                    break;
-            }
+            set_speed(current_speed);
             if (automatic) set_automatic(1, 0);
             else { start_temperature_monitor(); poll_temperature(); }
             break;
@@ -391,21 +363,21 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
                 case ID_TRAY_LOW_SPEED:
                     set_automatic(0, 1);
-                    toggle_fan_low_speed();
+                    set_speed(LOW_SPEED);
                     break;
 
                 case ID_TRAY_HIGH_SPEED:
                     set_automatic(0, 1);
-                    toggle_fan_high_speed();
+                    set_speed(HIGH_SPEED);
                     break;
 
                 case ID_TRAY_NORMAL_SPEED:
                     set_automatic(0, 1);
-                    toggle_fan_normal_speed();
+                    set_speed(NORMAL_SPEED);
                     break;
 
                 case ID_TRAY_AUTO:
-                    if (automatic) { set_automatic(0, 1); toggle_fan_normal_speed(); }
+                    if (automatic) { set_automatic(0, 1); set_speed(NORMAL_SPEED); }
                     else set_automatic(1, 1);
                     break;
 
@@ -428,19 +400,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
         case WM_HOTKEY:
             set_automatic(0, 1);
-            switch (wParam) {
-                case HOTKEY_LOW_SPEED:
-                    toggle_fan_low_speed();
-                    break;
-
-                case HOTKEY_HIGH_SPEED:
-                    toggle_fan_high_speed();
-                    break;
-
-                case HOTKEY_NORMAL_SPEED:
-                    toggle_fan_normal_speed();
-                    break;
-            }
+            set_speed((enum FanSpeed)wParam);
             poll_temperature();
             break;
 
@@ -491,13 +451,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     for (int i = 1; i < args; ++i) {
         if (wcscmp(argv[i], TEXT("--low-speed")) == 0) {
             automatic = 0;
-            fan_speed_set_at_start = LOW_SPEED;
+            current_speed = LOW_SPEED;
         } else if (wcscmp(argv[i], TEXT("--normal-speed")) == 0) {
             automatic = 0;
-            fan_speed_set_at_start = NORMAL_SPEED;
+            current_speed = NORMAL_SPEED;
         } else if (wcscmp(argv[i], TEXT("--high-speed")) == 0) {
             automatic = 0;
-            fan_speed_set_at_start = HIGH_SPEED;
+            current_speed = HIGH_SPEED;
         } else if (wcscmp(argv[i], TEXT("--auto")) == 0) {
             automatic = 1;
         }
