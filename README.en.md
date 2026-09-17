@@ -87,9 +87,7 @@ the distributables; the sensor helper and its dependencies are merged into
 them, nothing else needs to ship alongside. Tests simulate temperature traces and
 driver calls, and exercise the English/Spanish tray and settings dialog;
 they do not operate the real fan. Hardware compatibility must still
-be checked on the target Lenovo laptop. The original MinGW Makefile builds the
-native application only; `build.ps1` also builds/packages the sensor helper.
-See [third-party dependencies](THIRD-PARTY-NOTICES.md).
+be checked on the target Lenovo laptop. See [third-party dependencies](THIRD-PARTY-NOTICES.md).
 
 # Prerequisites
 

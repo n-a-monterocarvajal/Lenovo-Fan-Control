@@ -97,8 +97,7 @@ fusionados adentro, no hace falta nada más junto a ellos. Las pruebas
 simulan lecturas de temperatura y llamadas al driver, y ejercitan la bandeja
 y el diálogo de ajustes en español e inglés; no operan el ventilador real.
 La compatibilidad de hardware todavía debe comprobarse en la laptop Lenovo
-de destino. El Makefile original de MinGW solo compila la aplicación nativa;
-`build.ps1` también compila y empaqueta el lector de sensores. Ver
+de destino. Ver
 [dependencias de terceros](THIRD-PARTY-NOTICES.md).
 
 # Requisitos
