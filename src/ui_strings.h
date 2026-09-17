@@ -40,9 +40,9 @@ static const wchar_t *const ui_strings[][3] = {
     { L"Reading CPU temperature needs administrator privileges. Restart elevated now?\n\n"
       L"If you say no, Automatic mode will request High Speed for safety, since CPU\n"
       L"temperature stays unavailable.",
-      L"Para leer la temperatura de CPU hace falta reiniciar el programa como administrador. ¿Reiniciarlo ahora?\n\n"
+      L"Para leer la temperatura de CPU hace falta reiniciar el programa como administrador. ¿Reiniciar ahora?\n\n"
       L"Si eliges que no, el programa sigue abierto sin permisos de administrador, y el modo\n"
-      L"Automático va a mantener velocidad alta por precaución, ya que no puede leer la CPU.",
+      L"Automático va a mantener velocidad alta por precaución.",
       L"读取 CPU 温度需要管理员权限。是否现在以管理员身份重启？\n\n"
       L"如果选择否，由于 CPU 温度仍不可用，自动模式将为安全起见请求高转速。" }
 };
