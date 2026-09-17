@@ -55,6 +55,11 @@ entry (no installer, no scheduled task). It launches unelevated, same as a
 normal double-click; Automatic mode still prompts for elevation the first
 time it needs to read the CPU.
 
+**Always run as administrator**, in the same menu, stores the preference and
+relaunches the program elevated on every start, which helps if you use
+Automatic daily. Windows still shows the UAC dialog each time: remembering the
+grant would need a scheduled task, which this program does not install.
+
 Settings accept `20 <= Normal < High <= 100` degrees Celsius. Defaults are starting
 points, not hardware-specific maximum temperatures. Readings arrive every two
 seconds. Missing, invalid or stale readings (10 seconds without an update) request

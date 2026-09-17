@@ -21,7 +21,7 @@ $sensorExe = (Resolve-Path "$out\TemperatureMonitor.exe").Path -replace '\\', '\
 Set-Content -Path "$out\sensor.rc" -Value "109 RCDATA ""$sensorExe"""
 & rc.exe /nologo /fo "$out\sensor.res" "$out\sensor.rc"
 Check-Exit
-& cl.exe /nologo /std:c11 /utf-8 /W4 /D_CRT_SECURE_NO_WARNINGS /O2 /MT /Fo"$out\\" /Fe"$out\LenovoFanControl-$Architecture.exe" src/lenovo_fan_control.c src/fanctrl.c src/fan_worker.c src/auto_control.c src/temperature.c "$out\icon.res" "$out\sensor.res" /link /SUBSYSTEM:WINDOWS /MANIFEST:NO user32.lib shell32.lib advapi32.lib
+& cl.exe /nologo /std:c11 /utf-8 /W4 /D_CRT_SECURE_NO_WARNINGS /O2 /MT /Fo"$out\\" /Fe"$out\LenovoFanControl-$Architecture.exe" src/lenovo_fan_control.c src/fanctrl.c src/fan_worker.c src/auto_control.c src/temperature.c "$out\icon.res" "$out\sensor.res" /link /SUBSYSTEM:WINDOWS /MANIFEST:NO user32.lib shell32.lib advapi32.lib shlwapi.lib
 Check-Exit
 Remove-Item "$out\TemperatureMonitor.exe","$out\TemperatureMonitor.exe.config","$out\TemperatureMonitor.pdb","$out\sensor.rc","$out\sensor.res" -ErrorAction SilentlyContinue
 if ($Test) {
@@ -33,7 +33,7 @@ if ($Test) {
         @{ Name = 'fan_worker_test'; Args = @('tests/fan_worker_test.c', 'src/fan_worker.c') },
         @{ Name = 'TemperatureMonitor'; Args = @('tests/fake_sensor.c'); Fixture = $true },
         @{ Name = 'temperature_test'; Args = @('tests/temperature_test.c', 'src/temperature.c') },
-        @{ Name = 'tray_ui_test'; Args = @('tests/tray_ui_test.c', 'src/fan_worker.c', 'src/auto_control.c', 'src/temperature.c', "$out\icon.res", '/link', 'user32.lib', 'shell32.lib', 'advapi32.lib') }
+        @{ Name = 'tray_ui_test'; Args = @('tests/tray_ui_test.c', 'src/fan_worker.c', 'src/auto_control.c', 'src/temperature.c', "$out\icon.res", '/link', 'user32.lib', 'shell32.lib', 'advapi32.lib', 'shlwapi.lib') }
     )
     foreach ($suite in $suites) {
         & cl.exe /nologo /std:c11 /utf-8 /W4 /WX /D_CRT_SECURE_NO_WARNINGS /MT /Fo"$tests\\" /Fe"$tests\$($suite.Name).exe" @($suite.Args)

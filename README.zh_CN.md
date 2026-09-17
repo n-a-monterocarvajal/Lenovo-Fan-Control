@@ -6,7 +6,7 @@ Language: [Español](README.md) | [English](README.en.md)
 > 和 `Temperature thresholds...`。默认 70°C 切换高转速，65°C 恢复正常转速。
 > 传感器库 LibreHardwareMonitorLib 已内嵌到单一可执行文件中；手动挡位和联想 EnergyDrv
 > 驱动不需要管理员权限，程序默认不请求提权。开启自动模式读取 CPU 温度时才会请求以管理员身份
-> 重启，并在缺少 PawnIO 驱动时自动静默安装。托盘菜单新增“开机启动”选项。手动选择转速会关闭
+> 重启，并在缺少 PawnIO 驱动时自动静默安装。托盘菜单新增“开机启动”和“始终以管理员身份运行”选项。手动选择转速会关闭
 > 自动模式。完整构建、依赖和行为说明见
 > [English README](README.en.md#automatic-temperature-control)。以下为原版使用说明。
 

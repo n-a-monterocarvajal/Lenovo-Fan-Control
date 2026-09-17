@@ -81,6 +81,12 @@ int main(void) {
         SendMessageW(dialog, WM_COMMAND, IDOK, 0);
         assert(current_speed == NORMAL_SPEED); /* Editing thresholds re-decides immediately. */
         assert(wcsstr(ui(UI_ABOUT_TEXT), L"n-a-monterocarvajal"));
+        /* The menu item persists the choice; the relaunch itself is not exercised. */
+        always_elevated = 0;
+        SendMessageW(window, WM_COMMAND, ID_TRAY_ELEVATED, 0);
+        assert(always_elevated && GetPrivateProfileIntW(L"Startup", L"Elevated", 0, settings_path) == 1);
+        SendMessageW(window, WM_COMMAND, ID_TRAY_ELEVATED, 0);
+        assert(!always_elevated && GetPrivateProfileIntW(L"Startup", L"Elevated", 1, settings_path) == 0);
         DestroyWindow(dialog);
         SendMessageW(window, WM_COMMAND, ID_TRAY_NORMAL_SPEED, 0);
         assert(!automatic && temperature_read(&cpu, &gpu));
