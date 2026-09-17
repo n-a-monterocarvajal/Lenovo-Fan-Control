@@ -41,7 +41,7 @@ static const wchar_t *const ui_strings[][3] = {
       L"If you say no, Automatic mode will request High Speed for safety, since CPU\n"
       L"temperature stays unavailable.",
       L"Leer la temperatura de CPU necesita permisos de administrador. ¿Reiniciar ahora como administrador?\n\n"
-      L"Si elegís que no, el modo Automático va a pedir velocidad alta por seguridad,\n"
+      L"Si eliges que no, el modo Automático va a pedir velocidad alta por seguridad,\n"
       L"porque la temperatura de CPU sigue sin estar disponible.",
       L"读取 CPU 温度需要管理员权限。是否现在以管理员身份重启？\n\n"
       L"如果选择否，由于 CPU 温度仍不可用，自动模式将为安全起见请求高转速。" }

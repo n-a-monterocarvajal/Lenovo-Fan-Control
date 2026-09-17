@@ -9,12 +9,12 @@ Esta versión corrige eso:
 
 - El programa abre sin pedir UAC, igual que la versión 0.4 original.
 - Activar **Automático por temperatura** sin estar elevado ofrece reiniciar
-  el programa como administrador. Si aceptás, en ese arranque se instala en
-  silencio el controlador [PawnIO](https://pawnio.eu/) si falta. Si rechazás,
+  el programa como administrador. Si aceptas, en ese arranque se instala en
+  silencio el controlador [PawnIO](https://pawnio.eu/) si falta. Si rechazas,
   el programa sigue sin elevar y Automático pide velocidad alta por
   seguridad, porque la CPU sigue sin poder leerse.
 - **Iniciar con Windows** también arranca sin elevar; la elevación se pide
-  recién cuando activás Automático.
+  solo cuando activas Automático.
 - El README en español ahora es una traducción completa del original
   (requisitos, uso manual, cómo funciona el driver EnergyDrv, límites y
   referencias), no solo un resumen de los cambios del fork. Pasa a ser el

@@ -23,15 +23,15 @@ Este fork agrega umbrales de temperatura opcionales a la aplicación de bandeja 
    sin estar elevado ofrece reiniciar el programa como administrador, y en
    ese primer arranque elevado instala en silencio el
    [driver PawnIO](https://pawnio.eu/) si falta (su instalador firmado
-   también va incrustado). Si elegís que no, el programa sigue sin elevar,
+   también va incrustado). Si eliges que no, el programa sigue sin elevar,
    pero Automático va a pedir velocidad alta por seguridad, porque la
    temperatura de CPU sigue sin estar disponible. El lector de sensores
    incrustado necesita .NET Framework 4.7.2 o posterior, ya presente en
    Windows 10/11.
-3. Abrí **Umbrales de temperatura...** en el menú de bandeja. Los valores
+3. Abre **Umbrales de temperatura...** en el menú de bandeja. Los valores
    iniciales son **70 °C** para entrar en Velocidad alta y **65 °C** para
    volver a Velocidad normal.
-4. Activá **Automático por temperatura**, o iniciá con `--auto`.
+4. Activa **Automático por temperatura**, o inicia con `--auto`.
 
 El menú muestra las lecturas actuales de CPU y GPU. Se prefiere CPU Package
 (o la temperatura de die en AMD); si no está disponible, se usa la mayor
@@ -64,7 +64,7 @@ hardware específico. Las lecturas llegan cada dos segundos aproximadamente.
 Si faltan, son inválidas, o pasan diez segundos sin una lectura nueva, se
 pide Velocidad alta y se muestra **Temperatura no disponible**. Al iniciar
 también se pide Velocidad alta hasta que llegue una lectura válida. Después
-de resolver un problema de sensor o driver, desactivá y volvé a activar
+de resolver un problema de sensor o driver, desactiva y vuelve a activar
 Automático para reiniciar el lector.
 
 Elegir cualquier velocidad manual, o su atajo de teclado, desactiva
@@ -83,7 +83,7 @@ ventilador.
 
 ## Compilación y verificación de este fork
 
-Instalá Visual Studio 2022 Build Tools con **Desktop development with C++**,
+Instala Visual Studio 2022 Build Tools con **Desktop development with C++**,
 un Windows SDK y un SDK de .NET. Desde PowerShell:
 
 ```powershell
@@ -109,12 +109,12 @@ de destino. El Makefile original de MinGW solo compila la aplicación nativa;
 
 # Uso
 
-1. Compilá este fork como se describe arriba. Las [versiones del repositorio
+1. Compila este fork como se describe arriba. Las [versiones del repositorio
    original](https://github.com/jiarandiana0307/Lenovo-Fan-Control/releases)
    no incluyen la opción de temperatura automática.
 
-2. Hacé doble clic en el programa LenovoFanControl para ejecutarlo; vas a
-   verlo en la bandeja del sistema.
+2. Haz doble clic en el programa LenovoFanControl para ejecutarlo; lo vas a
+   ver en la bandeja del sistema.
 
 Si aparece un mensaje `Failed to open\\.\EnergyDrv`, significa que no se
 encontró el driver de Lenovo o que no funciona como se espera. Si no aparece
@@ -131,21 +131,21 @@ estos tres:
 2. `High Speed`: el ventilador gira a velocidad máxima.
 3. `Normal Speed`: el ventilador gira a velocidad normal.
 
-Podés hacer clic en `Low Speed` y `High Speed` en el menú, o usar los atajos
+Puedes hacer clic en `Low Speed` y `High Speed` en el menú, o usar los atajos
 `Ctrl+Alt+F10` y `Ctrl+Alt+F11`, para mantener el ventilador en velocidad
-mínima y máxima respectivamente. También podés hacer clic en `Normal Speed`
+mínima y máxima respectivamente. También puedes hacer clic en `Normal Speed`
 o usar el atajo `Ctrl+Alt+F12` para devolver el ventilador a su velocidad
 normal.
 
-Por último, podés hacer clic en `Exit` en el menú para cerrar el programa; el
+Por último, puedes hacer clic en `Exit` en el menú para cerrar el programa; el
 ventilador vuelve entonces a velocidad normal.
 
-Para elegir la velocidad inicial del ventilador, podés ejecutar el programa
+Para elegir la velocidad inicial del ventilador, puedes ejecutar el programa
 con el parámetro de línea de comandos `--low-speed`, `--normal-speed` o
 `--high-speed`, que ponen el ventilador en velocidad baja, normal o alta al
 iniciar, respectivamente. El comportamiento por defecto, sin ninguno de estos
 parámetros, es velocidad alta. Por ejemplo, para mantener el ventilador en
-velocidad baja al iniciar, ejecutá: `LenovoFanControl-x64.exe --low-speed`
+velocidad baja al iniciar, ejecuta: `LenovoFanControl-x64.exe --low-speed`
 
 **Nota:** la `Low Speed` manual desactiva el control automático por
 temperatura y puede provocar temperaturas de hardware altas. El modo
@@ -166,7 +166,7 @@ partir de eso. Resultó que ese software se comunica con el EC a través del
 driver de kernel `Lenovo ACPI-Compliant Virtual Power Controller`. Así es
 exactamente como funciona este proyecto.
 
-Si tenés instalado el driver `Lenovo ACPI-Compliant Virtual Power
+Si tienes instalado el driver `Lenovo ACPI-Compliant Virtual Power
 Controller`, tu sistema tiene un dispositivo `\\.\EnergyDrv`. Este
 dispositivo lo crea el driver de Lenovo para exponer una interfaz de
 comunicación con otras aplicaciones, como Lenovo Energy Manager. El driver
