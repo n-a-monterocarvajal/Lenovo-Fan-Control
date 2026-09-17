@@ -1,4 +1,4 @@
-# Lenovo Fan Control 0.5
+# Lenovo Fan Control 0.6
 
 Fork de [jiarandiana0307/Lenovo-Fan-Control](https://github.com/jiarandiana0307/Lenovo-Fan-Control),
 con activación automática de la velocidad alta según la temperatura.
@@ -9,9 +9,9 @@ temperaturas actuales de CPU y GPU, también en modo manual. No son una medició
 
 ## Instalación y uso
 
-1. Extrae el ZIP de tu arquitectura. `LenovoFanControl-x64.exe` (o `-x86.exe`) es el
-   único ejecutable: el lector de sensores LibreHardwareMonitor va incrustado dentro,
-   no es un archivo aparte.
+1. Descarga `LenovoFanControl-x64.exe` (o `-x86.exe` en equipos de 32 bits) y listo:
+   no hay ZIP ni instalador. El lector de sensores LibreHardwareMonitor va
+   incrustado dentro, no es un archivo aparte.
 2. El equipo debe ser compatible con el controlador **Lenovo ACPI-Compliant Virtual
    Power Controller (EnergyDrv)**, que no se instala automáticamente. Para leer la
    CPU, el propio programa instala en silencio el controlador [PawnIO](https://pawnio.eu/)
@@ -52,10 +52,15 @@ La interfaz usa español neutro en Windows configurado en español e inglés en 
 demás idiomas, conservando también la traducción al chino. «Acerca de» incluye los
 créditos del proyecto original, del fork y de la biblioteca de sensores.
 
+**Iniciar con Windows**, en el menú de bandeja, agrega/quita una entrada en el
+registro (Run del usuario actual), sin instalador ni tarea programada. Como el
+programa sigue necesitando administrador (EnergyDrv), Windows seguirá pidiendo
+UAC en cada inicio de sesión mientras esta opción esté activa.
+
 ## Compilación y verificación
 
 Consulta [README.md](README.md#build-and-test-this-fork). `build.ps1 -Test` compila,
-ejecuta pruebas con sensores y controlador simulados, y genera el ZIP distribuible.
+ejecuta pruebas con sensores y controlador simulados, y genera el exe distribuible.
 Estas pruebas no verifican la refrigeración física del equipo: la compatibilidad
 real debe comprobarse en el Lenovo de destino.
 

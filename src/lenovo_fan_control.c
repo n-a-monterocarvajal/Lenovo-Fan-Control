@@ -20,7 +20,7 @@
 
 #define WM_TRAYICON (WM_USER + 1)
 
-#define VERSION "v0.5"
+#define VERSION "v0.6"
 
 enum TrayMenuIDs {
     ID_TRAY_APP_ICON = 1001,
@@ -33,6 +33,7 @@ enum TrayMenuIDs {
     ID_TRAY_AUTO,
     ID_TRAY_TEMPERATURE,
     ID_TRAY_SETTINGS,
+    ID_TRAY_STARTUP,
 };
 
 enum HotKeyIDs {
@@ -133,6 +134,46 @@ enum FanSpeed fan_speed_set_at_start = HIGH_SPEED;
 static enum FanSpeed current_speed = HIGH_SPEED;
 static int automatic, high_threshold = 70, normal_threshold = 65, auto_high = 1;
 static WCHAR settings_path[MAX_PATH];
+
+#define STARTUP_KEY L"Software\\Microsoft\\Windows\\CurrentVersion\\Run"
+#define STARTUP_VALUE L"LenovoFanControl"
+
+/* Quoted so a path with spaces still runs correctly from the Run key. */
+static int get_quoted_module_path(WCHAR *path, DWORD capacity) {
+    DWORD length = GetModuleFileNameW(NULL, path + 1, capacity - 2);
+    if (!length || length >= capacity - 2) return 0;
+    path[0] = L'"';
+    path[length + 1] = L'"';
+    path[length + 2] = 0;
+    return 1;
+}
+
+/* Elevation is still required (EnergyDrv), so Windows will still prompt for UAC
+   at login when this is on; there is no way around that without Task Scheduler. */
+static int is_startup_enabled(void) {
+    WCHAR expected[MAX_PATH + 2], current[MAX_PATH + 2];
+    HKEY key;
+    DWORD size = sizeof(current), type;
+    LONG result;
+    if (!get_quoted_module_path(expected, MAX_PATH + 2)) return 0;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, STARTUP_KEY, 0, KEY_QUERY_VALUE, &key) != ERROR_SUCCESS) return 0;
+    result = RegQueryValueExW(key, STARTUP_VALUE, NULL, &type, (BYTE *)current, &size);
+    RegCloseKey(key);
+    return result == ERROR_SUCCESS && type == REG_SZ && !wcscmp(expected, current);
+}
+
+static void set_startup_enabled(int enabled) {
+    HKEY key;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, STARTUP_KEY, 0, KEY_SET_VALUE, &key) != ERROR_SUCCESS) return;
+    if (enabled) {
+        WCHAR path[MAX_PATH + 2];
+        if (get_quoted_module_path(path, MAX_PATH + 2))
+            RegSetValueExW(key, STARTUP_VALUE, 0, REG_SZ, (const BYTE *)path, (DWORD)(wcslen(path) + 1) * sizeof(WCHAR));
+    } else {
+        RegDeleteValueW(key, STARTUP_VALUE);
+    }
+    RegCloseKey(key);
+}
 
 static void save_settings(void) {
     WCHAR high[16], normal[16];
@@ -285,6 +326,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             AppendMenuW(hMenu, MF_STRING, ID_TRAY_AUTO, ui(UI_MENU_AUTO));
             AppendMenuW(hMenu, MF_STRING, ID_TRAY_SETTINGS, ui(UI_MENU_SETTINGS));
             AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
+            AppendMenuW(hMenu, MF_STRING, ID_TRAY_STARTUP, ui(UI_MENU_STARTUP));
+            CheckMenuItem(hMenu, ID_TRAY_STARTUP, MF_BYCOMMAND | (is_startup_enabled() ? MF_CHECKED : MF_UNCHECKED));
+            AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
             AppendMenu(hMenu, MF_STRING, ID_TRAY_ABOUT, lang->menu_about);
             AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
             AppendMenu(hMenu, MF_STRING, ID_TRAY_EXIT, lang->menu_exit);
@@ -350,6 +394,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
                 case ID_TRAY_ABOUT:
                     MessageBox(hwnd, lang->about_text, lang->menu_about, MB_OK | MB_ICONINFORMATION);
+                    break;
+
+                case ID_TRAY_STARTUP:
+                    set_startup_enabled(!is_startup_enabled());
+                    CheckMenuItem(hMenu, ID_TRAY_STARTUP, MF_BYCOMMAND | (is_startup_enabled() ? MF_CHECKED : MF_UNCHECKED));
                     break;
             }
             if (LOWORD(wParam) != ID_TRAY_EXIT) poll_temperature();

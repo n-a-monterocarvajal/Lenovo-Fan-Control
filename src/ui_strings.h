@@ -7,7 +7,7 @@ enum UiText {
     UI_THRESHOLD_ERROR_TITLE, UI_MENU_AUTO, UI_MENU_SETTINGS, UI_LOADING,
     UI_REGISTER_ERROR, UI_WINDOW_ERROR, UI_ERROR, UI_SETTINGS_TITLE,
     UI_SETTINGS_HINT, UI_SETTINGS_HIGH, UI_SETTINGS_NORMAL, UI_SETTINGS_BAND,
-    UI_SAVE, UI_CANCEL
+    UI_SAVE, UI_CANCEL, UI_MENU_STARTUP
 };
 static int ui_language; /* 0 = English, 1 = Spanish, 2 = Chinese */
 static const wchar_t *const ui_strings[][3] = {
@@ -35,7 +35,8 @@ static const wchar_t *const ui_strings[][3] = {
       L"Entre ambos valores, el ventilador no cambia de modo: así se evita que suba y baje de golpe.",
       L"在两个阈值之间风扇保持原有模式，避免频繁切换。" },
     { L"Save", L"Guardar", L"保存" },
-    { L"Cancel", L"Cancelar", L"取消" }
+    { L"Cancel", L"Cancelar", L"取消" },
+    { L"Start with Windows", L"Iniciar con Windows", L"开机启动" }
 };
 static const wchar_t *ui(enum UiText text) { return ui_strings[text][ui_language]; }
 #endif

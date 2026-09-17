@@ -4,8 +4,8 @@ Language: [English](README.md)
 
 > 此分支新增 CPU/GPU 温度阈值自动控制：托盘菜单中的 `Automatic (temperature)`
 > 和 `Temperature thresholds...`。默认 70°C 切换高转速，65°C 恢复正常转速。
-> 传感器库 LibreHardwareMonitorLib 已内嵌到单一可执行文件中；CPU 读数需要以管理员
-> 身份运行，缺少 PawnIO 驱动时程序会自动静默安装。手动选择转速会关闭自动模式。完整构建、依赖和行为说明见
+> 传感器库 LibreHardwareMonitorLib 已内嵌到单一可执行文件中；程序启动时会自行请求管理员权限，
+> 缺少 PawnIO 驱动时会自动静默安装。托盘菜单新增“开机启动”选项。手动选择转速会关闭自动模式。完整构建、依赖和行为说明见
 > [English README](README.md#automatic-temperature-control)。以下为原版使用说明。
 
 ---

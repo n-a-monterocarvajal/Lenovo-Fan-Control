@@ -42,11 +42,16 @@ A GPU without a supported core sensor is shown as unavailable; CPU monitoring
 is required. If a previously readable GPU stops reporting, that is a sensor failure.
 
 The speed and temperatures are the two informational rows at the top of the tray
-menu. Temperatures remain visible in manual mode. Version 0.5 includes complete
-English and neutral Spanish controls, selected from the Windows language, as well
-as Chinese. About credits both the original author and this fork.
+menu. Temperatures remain visible in manual mode. Complete English and neutral
+Spanish controls are selected from the Windows language, as well as Chinese.
+About credits both the original author and this fork.
 
 Between the two thresholds the previous speed is retained (hysteresis).
+
+**Start with Windows** in the tray menu adds/removes a per-user Run registry
+entry (no installer, no scheduled task). Since the app still needs
+Administrator for EnergyDrv, Windows will still prompt for UAC at every login
+when this is on.
 Settings accept `20 <= Normal < High <= 100` degrees Celsius. Defaults are starting
 points, not hardware-specific maximum temperatures. Readings arrive every two
 seconds. Missing, invalid or stale readings (10 seconds without an update) request
@@ -74,9 +79,9 @@ Windows SDK, and a .NET SDK. From PowerShell:
 ./build.ps1 -Architecture x86 -Test
 ```
 
-Outputs, including the sensor library and dependencies, are in `bin/x64` or
-`bin/x86`. Distributable ZIPs are `bin/LenovoFanControl-v0.5-x64.zip` and
-`bin/LenovoFanControl-v0.5-x86.zip`. Tests simulate temperature traces and
+`bin/x64/LenovoFanControl-x64.exe` and `bin/x86/LenovoFanControl-x86.exe` are
+the distributables; the sensor helper and its dependencies are merged into
+them, nothing else needs to ship alongside. Tests simulate temperature traces and
 driver calls, and exercise the English/Spanish tray and settings dialog;
 they do not operate the real fan. Hardware compatibility must still
 be checked on the target Lenovo laptop. The original MinGW Makefile builds the
