@@ -54,11 +54,10 @@ internal static class Program
                 continue;
             if (!cpu && sensor.Name != "GPU Core") continue;
             float? value = sensor.Value;
-            if (value.HasValue && value >= 0 && value <= 150 &&
-                (!hottest.HasValue || value > hottest)) hottest = value;
-            if (value.HasValue && value >= 0 && value <= 150 &&
-                (sensor.Name == "CPU Package" || sensor.Name == "Core (Tctl/Tdie)" ||
-                 sensor.Name == "Core (Tdie)")) package = value;
+            if (!(value >= 0 && value <= 150)) continue;
+            if (!hottest.HasValue || value > hottest) hottest = value;
+            if (sensor.Name == "CPU Package" || sensor.Name == "Core (Tctl/Tdie)" ||
+                sensor.Name == "Core (Tdie)") package = value;
         }
         foreach (IHardware child in hardware.SubHardware)
         {
