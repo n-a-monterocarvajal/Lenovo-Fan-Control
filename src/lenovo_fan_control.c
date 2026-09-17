@@ -7,7 +7,6 @@
 
 #include <stdio.h>
 #include <Windows.h>
-#include <tchar.h>
 #include <shlobj.h>
 #include <shellapi.h>
 #include <wchar.h>
@@ -227,7 +226,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
             nid.uCallbackMessage = WM_TRAYICON;
             nid.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_APPICON));
-            _tcscpy(nid.szTip, ui(UI_APP_NAME));
+            wcscpy(nid.szTip, ui(UI_APP_NAME));
             Shell_NotifyIcon(NIM_ADD, &nid);
 
             hMenu = CreatePopupMenu();
@@ -361,22 +360,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     load_settings();
     LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &args);
     for (int i = 1; i < args; ++i) {
-        if (wcscmp(argv[i], TEXT("--low-speed")) == 0) {
+        if (wcscmp(argv[i], L"--low-speed") == 0) {
             automatic = 0;
             current_speed = LOW_SPEED;
-        } else if (wcscmp(argv[i], TEXT("--normal-speed")) == 0) {
+        } else if (wcscmp(argv[i], L"--normal-speed") == 0) {
             automatic = 0;
             current_speed = NORMAL_SPEED;
-        } else if (wcscmp(argv[i], TEXT("--high-speed")) == 0) {
+        } else if (wcscmp(argv[i], L"--high-speed") == 0) {
             automatic = 0;
             current_speed = HIGH_SPEED;
-        } else if (wcscmp(argv[i], TEXT("--auto")) == 0) {
+        } else if (wcscmp(argv[i], L"--auto") == 0) {
             automatic = 1;
         }
     }
     LocalFree(argv);
 
-    hMutex = CreateMutex(NULL, TRUE, TEXT("LenovoFanControlMutex"));
+    hMutex = CreateMutex(NULL, TRUE, L"LenovoFanControlMutex");
     if (GetLastError() == ERROR_ALREADY_EXISTS) {
         CloseHandle(hMutex);
         MessageBox(NULL, ui(UI_ALREADY_RUNNING), ui(UI_NOTE), MB_OK | MB_ICONINFORMATION);
@@ -391,7 +390,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     wc.cbSize = sizeof(WNDCLASSEX);
     wc.lpfnWndProc = WndProc;
     wc.hInstance = hInstance;
-    wc.lpszClassName = TEXT("LenovoFanControlClass");
+    wc.lpszClassName = L"LenovoFanControlClass";
 
     if (!RegisterClassEx(&wc)) {
         MessageBox(NULL, ui(UI_REGISTER_ERROR), ui(UI_ERROR), MB_ICONEXCLAMATION | MB_OK);
@@ -399,7 +398,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     }
 
     if (!fan_worker_start()) return 1;
-    HWND hwnd = CreateWindowEx(0, TEXT("LenovoFanControlClass"), ui(UI_APP_NAME), 0, 0, 0, 0, 0, NULL, NULL, hInstance, NULL);
+    HWND hwnd = CreateWindowEx(0, L"LenovoFanControlClass", ui(UI_APP_NAME), 0, 0, 0, 0, 0, NULL, NULL, hInstance, NULL);
     if (hwnd == NULL) {
         fan_worker_stop();
         MessageBox(NULL, ui(UI_WINDOW_ERROR), ui(UI_ERROR), MB_ICONEXCLAMATION | MB_OK);
