@@ -3,12 +3,19 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Security.Principal;
 using System.Threading;
 using LibreHardwareMonitor.Hardware;
 using Microsoft.Win32.SafeHandles;
 
 internal static class Program
 {
+    private static bool IsAdministrator()
+    {
+        using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
+            return new WindowsPrincipal(identity).IsInRole(WindowsBuiltInRole.Administrator);
+    }
+
     /// <summary>
     /// PawnIO's driver is what lets LibreHardwareMonitor read CPU temperature (MSR access).
     /// It ships as an embedded installer so the sensor stays a single file: silently
@@ -16,7 +23,7 @@ internal static class Program
     /// </summary>
     private static void EnsurePawnIoInstalled()
     {
-        if (LibreHardwareMonitor.PawnIo.PawnIo.IsInstalled || !Diagnostics.IsAdministrator()) return;
+        if (LibreHardwareMonitor.PawnIo.PawnIo.IsInstalled || !IsAdministrator()) return;
         string installerPath = Path.Combine(Path.GetTempPath(), "PawnIO_setup.exe");
         try
         {
@@ -63,7 +70,6 @@ internal static class Program
 
     private static int Main(string[] args)
     {
-        if (args.Length == 1 && args[0] == "--diagnose") return Diagnostics.Run();
         ulong handle, parentHandle;
         if (args.Length != 2 || !ulong.TryParse(args[0], out handle) ||
             !ulong.TryParse(args[1], out parentHandle)) return 1;
