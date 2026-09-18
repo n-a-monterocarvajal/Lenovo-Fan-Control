@@ -1,25 +1,20 @@
-# 0.6.1: elevación bajo demanda, no todo el tiempo / on-demand elevation, not always
+# 0.7: iniciar siempre como administrador / always run as administrator
 
 ## Español
 
-0.6 pedía UAC en cada apertura del programa, incluso para el control manual de
-ventilador, que nunca lo necesitó (el driver EnergyDrv de Lenovo funciona sin
-administrador; solo la lectura de temperatura de CPU vía PawnIO lo necesita).
-Esta versión corrige eso:
-
-- El programa abre sin pedir UAC, igual que la versión 0.4 original.
-- Activar **Automático por temperatura** sin estar elevado ofrece reiniciar
-  el programa como administrador. Si aceptas, en ese arranque se instala en
-  silencio el controlador [PawnIO](https://pawnio.eu/) si falta. Si rechazas,
-  el programa sigue sin elevar y Automático pide velocidad alta por
-  seguridad, porque la CPU sigue sin poder leerse.
-- **Iniciar con Windows** también arranca sin elevar; la elevación se pide
-  solo cuando activas Automático.
-- El README en español ahora es una traducción completa del original
-  (requisitos, uso manual, cómo funciona el driver EnergyDrv, límites y
-  referencias), no solo un resumen de los cambios del fork. Pasa a ser el
-  README principal del repositorio, con enlaces a las versiones en inglés y
-  chino.
+- Nueva opción **Iniciar siempre como administrador** en el menú de bandeja,
+  junto a **Iniciar con Windows**. Guarda la preferencia en `settings.ini` y,
+  en cada arranque, relanza el programa elevado conservando los parámetros de
+  línea de comandos (`--auto`, `--low-speed`, etc.). Sirve si usas
+  **Automático por temperatura** a diario y no quieres activarlo cada vez
+  después de abrir el programa.
+- Windows sigue mostrando el diálogo de UAC en cada arranque con la opción
+  activa: recordar el permiso exigiría una tarea programada, que este
+  programa no instala.
+- Limpieza interna sin cambios visibles: se quitó código muerto (bucles de
+  control previos al hilo del ventilador, el Makefile de MinGW y el modo
+  `--diagnose` del lector de sensores) y los textos de la interfaz quedaron en
+  una sola tabla.
 
 Se requieren el controlador Lenovo EnergyDrv compatible y .NET Framework
 4.7.2 o posterior (ya presente en Windows 10/11). La aplicación no instala
@@ -31,23 +26,19 @@ compatibilidad de sensores aún deben verificarse en el Lenovo de destino.
 
 ## English
 
-0.6 asked for UAC every time the program opened, even for manual fan
-control, which never needed it (Lenovo's EnergyDrv driver works without
-Administrator; only CPU temperature reading via PawnIO needs it). This
-version fixes that:
-
-- The program opens without a UAC prompt, matching the original 0.4.
-- Turning on **Automatic (temperature)** while unelevated offers to restart
-  the program as Administrator. Accepting silently installs the
-  [PawnIO](https://pawnio.eu/) driver if it's missing. Declining keeps the
-  app unelevated, and Automatic then requests High Speed for safety, since
-  CPU temperature stays unreadable.
-- **Start with Windows** also launches unelevated; elevation is only
-  requested once you turn Automatic on.
-- The Spanish README is now a full translation of the original (prerequisites,
-  manual usage, how the EnergyDrv driver works, limitations, references),
-  not just a summary of the fork's changes. It's now the repository's main
-  README, linking to the English and Chinese versions.
+- New **Always run as administrator** option in the tray menu, next to
+  **Start with Windows**. It stores the preference in `settings.ini` and
+  relaunches the program elevated on every start, keeping command-line
+  parameters (`--auto`, `--low-speed`, etc.). Useful if you use
+  **Automatic (temperature)** daily and don't want to turn it on after each
+  launch.
+- Windows still shows the UAC dialog on every start while the option is on:
+  remembering the grant would need a scheduled task, which this program does
+  not install.
+- Internal cleanup with no visible changes: dead code was removed (control
+  loops that predate the fan worker thread, the MinGW Makefile, and the
+  sensor helper's `--diagnose` mode), and the UI strings now live in a
+  single table.
 
 You need the compatible Lenovo EnergyDrv driver and .NET Framework 4.7.2 or
 later (already present on Windows 10/11). The application does not install
