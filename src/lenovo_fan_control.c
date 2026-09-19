@@ -128,7 +128,7 @@ static void poll_temperature(void) {
     double cpu = 0, gpu = -1;
     int valid = temperature_read(&cpu, &gpu);
     double celsius = cpu > gpu ? cpu : gpu;
-    WCHAR label[160], state_label[80];
+    WCHAR label[160], state_label[80], tip[128];
     LPCWSTR speed_label;
     if (automatic) {
         auto_high = auto_should_run_high(auto_high, celsius, valid, high_threshold, normal_threshold);
@@ -142,8 +142,13 @@ static void poll_temperature(void) {
         current_speed == LOW_SPEED ? ui(UI_AT_LOW) : ui(UI_AT_NORMAL);
     swprintf(state_label, 80, L"%ls (%ls)", speed_label, ui(automatic ? UI_AUTO : UI_MANUAL));
     ModifyMenuW(hMenu, ID_TRAY_STATE, MF_STRING | MF_DISABLED, ID_TRAY_STATE, state_label);
-    swprintf(nid.szTip, 128, L"%.45ls\n%.80ls", state_label, label);
-    Shell_NotifyIcon(NIM_MODIFY, &nid);
+    swprintf(tip, 128, L"%.45ls\n%.80ls", state_label, label);
+    /* Polled every second; an unchanged tip must not reach the shell, which
+       closes and reopens a visible tooltip on each update. */
+    if (wcscmp(tip, nid.szTip)) {
+        wcscpy(nid.szTip, tip);
+        Shell_NotifyIcon(NIM_MODIFY, &nid);
+    }
 }
 
 static int start_temperature_monitor(void) {
