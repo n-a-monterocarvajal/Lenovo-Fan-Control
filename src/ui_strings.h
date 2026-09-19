@@ -42,13 +42,13 @@ static const wchar_t *const ui_strings[][3] = {
     { L"Cancel", L"Cancelar", L"取消" },
     { L"Start with Windows", L"Iniciar con Windows", L"开机启动" },
     { L"Reading CPU temperature needs administrator privileges. Restart elevated now?\n\n"
-      L"If you say no, Automatic mode will request High Speed for safety, since CPU "
-      L"temperature stays unavailable.",
+      L"If you say no, the program stays open without administrator privileges, and "
+      L"Automatic mode will keep High Speed by default.",
       L"Para leer la temperatura de CPU hace falta reiniciar el programa como administrador. ¿Reiniciar ahora?\n\n"
       L"Si eliges que no, el programa sigue abierto sin permisos de administrador, y el modo "
       L"Automático va a mantener la velocidad alta de forma predeterminada.",
       L"读取 CPU 温度需要管理员权限。是否现在以管理员身份重启？\n\n"
-      L"如果选择否，由于 CPU 温度仍不可用，自动模式将为安全起见请求高转速。" },
+      L"如果选择否，程序将继续以非管理员权限运行，自动模式将默认保持高转速。" },
     { L"Lenovo Fan Control", L"Lenovo Fan Control", L"联想风扇控制" },
     { L"Note", L"Aviso", L"提示" },
     { L"The program is running.", L"El programa ya está en ejecución.", L"程序已经在运行中。" },
