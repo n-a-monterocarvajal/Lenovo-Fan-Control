@@ -1,6 +1,6 @@
 #ifndef UI_STRINGS_H
 #define UI_STRINGS_H
-#define VERSION "v0.7.1"
+#define VERSION "v0.7.2"
 /* The original manual controls and these new controls share the Windows locale. */
 enum UiText {
     UI_SAVE_ERROR, UI_TEMPERATURE_PAIR, UI_CPU_ONLY, UI_UNAVAILABLE_AUTO,
