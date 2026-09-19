@@ -7,9 +7,9 @@
 #include <assert.h>
 #include <stdio.h>
 
-static unsigned errors;
+static unsigned errors, notifications;
 static BOOL fake_notify(DWORD command, PNOTIFYICONDATAW data) {
-    (void)command; (void)data; return TRUE;
+    (void)command; (void)data; ++notifications; return TRUE;
 }
 static int fake_message(HWND owner, LPCWSTR text, LPCWSTR caption, UINT flags) {
     (void)owner; (void)text; (void)caption; (void)flags; ++errors; return IDOK;
@@ -48,6 +48,9 @@ int main(void) {
         while (!temperature_read(&cpu, &gpu) && GetTickCount() - started < 3000) Sleep(20);
         assert(temperature_read(&cpu, &gpu));
         poll_temperature();
+        unsigned sent = notifications;
+        poll_temperature(); /* Same reading: the tooltip must not be re-sent. */
+        assert(notifications == sent);
         assert(GetMenuItemID(hMenu, 0) == ID_TRAY_STATE);
         assert(GetMenuItemID(hMenu, 1) == ID_TRAY_TEMPERATURE);
         GetMenuStringW(hMenu, ID_TRAY_TEMPERATURE, text, 256, MF_BYCOMMAND);
