@@ -54,7 +54,7 @@ int main(void) {
         assert(GetMenuItemID(hMenu, 0) == ID_TRAY_STATE);
         assert(GetMenuItemID(hMenu, 1) == ID_TRAY_TEMPERATURE);
         GetMenuStringW(hMenu, ID_TRAY_TEMPERATURE, text, 256, MF_BYCOMMAND);
-        assert(wcsstr(text, L"71.5") && wcsstr(text, L"63.0"));
+        assert(wcsstr(text, L"72 °C") && wcsstr(text, L"63 °C")); /* Whole degrees: the sensors have no finer resolution. */
         GetMenuStringW(hMenu, ID_TRAY_AUTO, text, 256, MF_BYCOMMAND);
         assert(!wcscmp(text, ui(UI_MENU_AUTO)));
         SendMessageW(window, WM_COMMAND, ID_TRAY_LOW_SPEED, 0);
