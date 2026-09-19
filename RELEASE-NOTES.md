@@ -29,7 +29,8 @@ Compilado y probado en x64 y x86 con sensores y controlador simulados.
 - The program declares per-monitor DPI awareness. On displays scaled above
   100% the dialogs should look sharp instead of blurry; this was not tested
   on such displays.
-- The elevation prompt no longer breaks lines mid-sentence.
+- The elevation prompt no longer breaks lines mid-sentence, and now ends
+  with: "…, and Automatic mode will keep High Speed by default."
 
 You need the compatible Lenovo EnergyDrv driver and .NET Framework 4.7.2 or
 later (already present on Windows 10/11). The application does not install
