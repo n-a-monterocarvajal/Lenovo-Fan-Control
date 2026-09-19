@@ -16,8 +16,8 @@ enum UiText {
 static int ui_language; /* 0 = English, 1 = Spanish, 2 = Chinese */
 static const wchar_t *const ui_strings[][3] = {
     { L"Could not save temperature settings.", L"No se pudieron guardar los ajustes de temperatura.", L"无法保存温度设置。" },
-    { L"CPU: %.1f °C / GPU: %.1f °C", L"CPU: %.1f °C / GPU: %.1f °C", L"CPU: %.1f °C / GPU: %.1f °C" },
-    { L"CPU: %.1f °C / GPU: unavailable", L"CPU: %.1f °C / GPU: no disponible", L"CPU: %.1f °C / GPU: 不可用" },
+    { L"CPU: %.0f °C / GPU: %.0f °C", L"CPU: %.0f °C / GPU: %.0f °C", L"CPU: %.0f °C / GPU: %.0f °C" },
+    { L"CPU: %.0f °C / GPU: unavailable", L"CPU: %.0f °C / GPU: no disponible", L"CPU: %.0f °C / GPU: 不可用" },
     { L"Temperature unavailable; High Speed for safety", L"Temperatura no disponible: se usa velocidad alta por precaución", L"温度不可用；保持高转速" },
     { L"Temperature unavailable (check sensors)", L"Temperatura no disponible (revisa los sensores)", L"温度不可用（请检查传感器）" },
     { L"automatic", L"automático", L"自动" },
