@@ -1,49 +1,37 @@
-# 0.7: iniciar siempre como administrador / always run as administrator
+# 0.7.1: tooltip sin parpadeo y grados enteros / flicker-free tooltip, whole degrees
 
 ## Español
 
-- Nueva opción **Iniciar siempre como administrador** en el menú de bandeja,
-  junto a **Iniciar con Windows**. Guarda la preferencia en `settings.ini` y,
-  en cada arranque, relanza el programa elevado conservando los parámetros de
-  línea de comandos (`--auto`, `--low-speed`, etc.). Sirve si usas
-  **Automático por temperatura** a diario y no quieres activarlo cada vez
-  después de abrir el programa.
-- Windows sigue mostrando el diálogo de UAC en cada arranque con la opción
-  activa: recordar el permiso exigiría una tarea programada, que este
-  programa no instala.
-- Limpieza interna sin cambios visibles: se quitó código muerto (bucles de
-  control previos al hilo del ventilador, el Makefile de MinGW y el modo
-  `--diagnose` del lector de sensores) y los textos de la interfaz quedaron en
-  una sola tabla.
+- El tooltip del ícono de bandeja ya no parpadea al dejar el mouse encima en
+  modo Automático. El programa lo actualizaba cada segundo aunque el texto no
+  cambiara, y Windows 11 lo cerraba y reabría con cada actualización. Ahora
+  solo se actualiza cuando cambia el estado o la temperatura.
+- Las temperaturas se muestran en grados enteros (por ejemplo,
+  `CPU: 52 °C / GPU: 43 °C`). Los sensores de CPU y GPU reportan grados
+  enteros, así que el decimal siempre era `.0`.
 
 Se requieren el controlador Lenovo EnergyDrv compatible y .NET Framework
 4.7.2 o posterior (ya presente en Windows 10/11). La aplicación no instala
 EnergyDrv automáticamente.
 
-Compilado y probado en x64 y x86 con sensores y controlador simulados. La
-respuesta física del ventilador, el flujo real de elevación y la
-compatibilidad de sensores aún deben verificarse en el Lenovo de destino.
+La corrección del tooltip se verificó en una Lenovo con Windows 11. Las dos
+arquitecturas (x64 y x86) pasan las pruebas con sensores y controlador
+simulados.
 
 ## English
 
-- New **Always run as administrator** option in the tray menu, next to
-  **Start with Windows**. It stores the preference in `settings.ini` and
-  relaunches the program elevated on every start, keeping command-line
-  parameters (`--auto`, `--low-speed`, etc.). Useful if you use
-  **Automatic (temperature)** daily and don't want to turn it on after each
-  launch.
-- Windows still shows the UAC dialog on every start while the option is on:
-  remembering the grant would need a scheduled task, which this program does
-  not install.
-- Internal cleanup with no visible changes: dead code was removed (control
-  loops that predate the fan worker thread, the MinGW Makefile, and the
-  sensor helper's `--diagnose` mode), and the UI strings now live in a
-  single table.
+- The tray icon tooltip no longer flickers while hovering in Automatic mode.
+  The program updated it every second even when the text was unchanged, and
+  Windows 11 closed and reopened it on each update. It now updates only when
+  the state or temperature changes.
+- Temperatures are shown in whole degrees (for example,
+  `CPU: 52 °C / GPU: 43 °C`). The CPU and GPU sensors report whole degrees,
+  so the decimal was always `.0`.
 
 You need the compatible Lenovo EnergyDrv driver and .NET Framework 4.7.2 or
 later (already present on Windows 10/11). The application does not install
 EnergyDrv automatically.
 
-Built and tested for x64 and x86 using simulated sensors and driver calls.
-Physical fan response, the actual elevation flow, and sensor compatibility
-still need verification on the target Lenovo laptop.
+The tooltip fix was verified on a Lenovo laptop running Windows 11. Both
+architectures (x64 and x86) pass the tests with simulated sensors and driver
+calls.
